@@ -1,6 +1,5 @@
 # dcrwebapi
 
-
 ## Build Docker image
 
 ```sh
