@@ -99,6 +99,22 @@ $spdata = array(
         "LastUpdated" => 0,
         "Network" => "mainnet",
         "URL" => "https://ultrapool.eu",
+    ),
+    "Mike" => array(
+        "APIEnabled" => false,
+        "APIVersionsSupported" => array(),
+        "LastAttempt" => 0,
+        "LastUpdated" => 0,
+        "Network" => "mainnet",
+        "URL" => "https://dcr.farm",
+    ),
+    "November" => array(
+        "APIEnabled" => false,
+        "APIVersionsSupported" => array(),
+        "LastAttempt" => 0,
+        "LastUpdated" => 0,
+        "Network" => "mainnet",
+        "URL" => "https://decred.raqamiya.net",
     )
 );
 
