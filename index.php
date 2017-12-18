@@ -99,6 +99,14 @@ $spdata = array(
         "LastUpdated" => 0,
         "Network" => "mainnet",
         "URL" => "https://ultrapool.eu",
+    ),
+    "China" => array(
+        "APIEnabled" => false,
+        "APIVersionsSupported" => array(),
+        "LastAttempt" => 0,
+        "LastUpdated" => 0,
+        "Network" => "mainnet",
+        "URL" => "https://pos.dcr.fans",
     )
 );
 
