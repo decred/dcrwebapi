@@ -469,6 +469,11 @@ func stakepoolData(service *Service) (*map[string]Stakepool, error) {
 		Network:              "mainnet",
 		URL:                  "https://decred.raqamiya.net",
 	}
+	(*stakepools)["Oscar"] = Stakepool{
+		APIVersionsSupported: []interface{}{},
+		Network:              "mainnet",
+		URL:                  "https://pos.dcr.fans",
+	}
 
 	resp := &map[string]Stakepool{}
 	entry, hasGSD := service.Cache.Load("gsd")
