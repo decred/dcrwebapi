@@ -135,6 +135,10 @@ func downloadCount(service *Service) (*[]string, error) {
 		return nil, err
 	}
 
+	if binResp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("expected status code %d, got %d", http.StatusOK, binResp.StatusCode)
+	}
+
 	defer binResp.Body.Close()
 	binBody, err := ioutil.ReadAll(binResp.Body)
 	if err != nil {
@@ -159,6 +163,10 @@ func downloadCount(service *Service) (*[]string, error) {
 	relResp, err := service.HTTPClient.Do(relReq)
 	if err != nil {
 		return nil, err
+	}
+
+	if relResp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("expected status code %d, got %d", http.StatusOK, relResp.StatusCode)
 	}
 
 	defer relResp.Body.Close()
@@ -256,6 +264,10 @@ func insightStatus(service *Service) (*map[string]interface{}, error) {
 		return nil, err
 	}
 
+	if statusResp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("expected status code %d, got %d", http.StatusOK, statusResp.StatusCode)
+	}
+
 	defer statusResp.Body.Close()
 	statusBody, err := ioutil.ReadAll(statusResp.Body)
 	if err != nil {
@@ -299,6 +311,10 @@ func coinSupply(service *Service) (*map[string]interface{}, error) {
 	supplyResp, err := service.HTTPClient.Do(supplyReq)
 	if err != nil {
 		return nil, err
+	}
+
+	if supplyResp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("expected status code %d, got %d", http.StatusOK, supplyResp.StatusCode)
 	}
 
 	defer supplyResp.Body.Close()
@@ -355,13 +371,13 @@ func stakepoolStats(service *Service, pool *Stakepool, apiVersion int) error {
 		return err
 	}
 
+	if poolResp.StatusCode != http.StatusOK {
+		return fmt.Errorf("expected status code %d, got %d", http.StatusOK, poolResp.StatusCode)
+	}
+
 	defer poolResp.Body.Close()
 	poolRespBody, err := ioutil.ReadAll(poolResp.Body)
 	if err != nil {
-		return err
-	}
-
-	if poolResp.StatusCode != http.StatusOK {
 		return err
 	}
 
