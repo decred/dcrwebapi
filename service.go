@@ -79,7 +79,7 @@ func NewService() *Service {
 			MaxIdleConnsPerHost: 2,
 			TLSClientConfig:     &tls.Config{InsecureSkipVerify: false},
 		},
-		Timeout: time.Second * 8,
+		Timeout: time.Second * 16,
 	}
 	service.Router = http.NewServeMux()
 	service.Cache = sync.Map{}
@@ -514,10 +514,10 @@ func stakepoolData(service *Service) (*map[string]Stakepool, error) {
 
 	waitGroup.Wait()
 	now = time.Now()
-	// cache updated pool
+	// cache updated pools
 	cacheEntry := CacheEntry{
 		Item:   *resp,
-		Expiry: getFutureTime(&now, 0, 0, 20, 0),
+		Expiry: getFutureTime(&now, 0, 0, 10, 0),
 	}
 	service.Cache.Store("gsd", cacheEntry)
 	return resp, nil
