@@ -7,10 +7,10 @@ install:
   - gometalinter --install
 script:
   - export PATH=$PATH:$HOME/gopath/bin
-  - test -z "$(gometalinter --vendor --disable-all
+  - gometalinter --vendor --disable-all
     --enable=gofmt
     --enable=golint
     --enable=vet
     --enable=gosimple
     --enable=unconvert
-    --deadline=10m ./... | tee /dev/stderr)"
+    --deadline=10m ./...
