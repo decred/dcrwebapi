@@ -69,6 +69,12 @@ type Service struct {
 	Router *http.ServeMux
 	// the service cache
 	Cache sync.Map
+	// the stakepools
+	Stakepools *map[string]Stakepool
+	// the ticker
+	Ticker *time.Ticker
+	// the pool update mutex
+	Mutex sync.Mutex
 }
 
 // NewService creates a dcrwebapi service
@@ -79,10 +85,90 @@ func NewService() *Service {
 			MaxIdleConnsPerHost: 2,
 			TLSClientConfig:     &tls.Config{InsecureSkipVerify: false},
 		},
-		Timeout: time.Second * 16,
+		Timeout: time.Minute * 10,
 	}
 	service.Router = http.NewServeMux()
 	service.Cache = sync.Map{}
+	service.Mutex = sync.Mutex{}
+	service.Stakepools = &map[string]Stakepool{
+		"Bravo": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "mainnet",
+			URL:                  "https://dcr.stakepool.net",
+		},
+		"Delta": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "mainnet",
+			URL:                  "https://dcr.stakeminer.com",
+		},
+		"Echo": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "mainnet",
+			URL:                  "https://pool.d3c.red",
+		},
+		// Stakepool APi is unreachable for Foxtrot
+		// "Foxtrot" = Stakepool{
+		//   APIVersionsSupported: []interface{}{},
+		//   Network:              "mainnet",
+		//   URL:                  "https://dcrstakes.com",
+		// }
+		"Golf": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "mainnet",
+			URL:                  "https://stakepool.dcrstats.com",
+		},
+		"Hotel": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "mainnet",
+			URL:                  "https://stake.decredbrasil.com",
+		},
+		"India": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "mainnet",
+			URL:                  "https://stakepool.eu",
+		},
+		"Juliett": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "mainnet",
+			URL:                  "https://dcr.ubiqsmart.com",
+		},
+		"Kilo": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "testnet",
+			URL:                  "https://teststakepool.decred.org",
+		},
+		"Lima": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "mainnet",
+			URL:                  "https://ultrapool.eu",
+		},
+		"Mike": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "mainnet",
+			URL:                  "https://dcr.farm",
+		},
+		"November": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "mainnet",
+			URL:                  "https://decred.raqamiya.net",
+		},
+		"Oscar": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "mainnet",
+			URL:                  "https://pos.dcr.fans",
+		},
+	}
+
+	// fetch initial stakepool data
+	stakepoolData(service)
+
+	// start stakepool update ticker
+	service.Ticker = time.NewTicker(time.Minute * 5)
+	go func() {
+		for range service.Ticker.C {
+			stakepoolData(service)
+		}
+	}()
 
 	// setup route
 	service.Router.HandleFunc("/", service.HandleRoutes)
@@ -358,7 +444,8 @@ func coinSupply(service *Service) (*map[string]interface{}, error) {
 }
 
 // stakepoolStats fetches statistics for a stakepool
-func stakepoolStats(service *Service, pool *Stakepool, apiVersion int) error {
+func stakepoolStats(service *Service, key string, apiVersion int) error {
+	pool := (*service.Stakepools)[key]
 	poolURL := fmt.Sprintf("%s/api/v%d/stats", pool.URL, apiVersion)
 	poolReq, err := http.NewRequest("GET", poolURL, nil)
 	if err != nil {
@@ -414,6 +501,9 @@ func stakepoolStats(service *Service, pool *Stakepool, apiVersion int) error {
 			pool.APIVersionsSupported = data["APIVersionsSupported"].([]interface{})
 			pool.APIEnabled = true
 			pool.LasUpdated = time.Now().Unix()
+			service.Mutex.Lock()
+			(*service.Stakepools)[key] = pool
+			service.Mutex.Unlock()
 			return nil
 		}
 	}
@@ -422,121 +512,25 @@ func stakepoolStats(service *Service, pool *Stakepool, apiVersion int) error {
 }
 
 // stakepoolData fetches statistics for all listed DCR stakepools
-func stakepoolData(service *Service) (*map[string]Stakepool, error) {
-	stakepools := &map[string]Stakepool{}
-	(*stakepools)["Bravo"] = Stakepool{
-		APIVersionsSupported: []interface{}{},
-		Network:              "mainnet",
-		URL:                  "https://dcr.stakepool.net",
-	}
-	(*stakepools)["Delta"] = Stakepool{
-		APIVersionsSupported: []interface{}{},
-		Network:              "mainnet",
-		URL:                  "https://dcr.stakeminer.com",
-	}
-	(*stakepools)["Echo"] = Stakepool{
-		APIVersionsSupported: []interface{}{},
-		Network:              "mainnet",
-		URL:                  "https://pool.d3c.red",
-	}
-	// Stakepool APi is unreachable for Foxtrot
-	// (*stakepools)["Foxtrot"] = Stakepool{
-	// 	APIVersionsSupported: []interface{}{},
-	// 	Network:              "mainnet",
-	// 	URL:                  "https://dcrstakes.com",
-	// }
-	(*stakepools)["Golf"] = Stakepool{
-		APIVersionsSupported: []interface{}{},
-		Network:              "mainnet",
-		URL:                  "https://stakepool.dcrstats.com",
-	}
-	(*stakepools)["Hotel"] = Stakepool{
-		APIVersionsSupported: []interface{}{},
-		Network:              "mainnet",
-		URL:                  "https://stake.decredbrasil.com",
-	}
-	(*stakepools)["India"] = Stakepool{
-		APIVersionsSupported: []interface{}{},
-		Network:              "mainnet",
-		URL:                  "https://stakepool.eu",
-	}
-	(*stakepools)["Juliett"] = Stakepool{
-		APIVersionsSupported: []interface{}{},
-		Network:              "mainnet",
-		URL:                  "https://dcr.ubiqsmart.com",
-	}
-	(*stakepools)["Kilo"] = Stakepool{
-		APIVersionsSupported: []interface{}{},
-		Network:              "testnet",
-		URL:                  "https://teststakepool.decred.org",
-	}
-	(*stakepools)["Lima"] = Stakepool{
-		APIVersionsSupported: []interface{}{},
-		Network:              "mainnet",
-		URL:                  "https://ultrapool.eu",
-	}
-	(*stakepools)["Mike"] = Stakepool{
-		APIVersionsSupported: []interface{}{},
-		Network:              "mainnet",
-		URL:                  "https://dcr.farm",
-	}
-	(*stakepools)["November"] = Stakepool{
-		APIVersionsSupported: []interface{}{},
-		Network:              "mainnet",
-		URL:                  "https://decred.raqamiya.net",
-	}
-	(*stakepools)["Oscar"] = Stakepool{
-		APIVersionsSupported: []interface{}{},
-		Network:              "mainnet",
-		URL:                  "https://pos.dcr.fans",
-	}
-
-	resp := &map[string]Stakepool{}
-	entry, hasGSD := service.Cache.Load("gsd")
-	now := time.Now()
-	if hasGSD {
-		// return cached response if not invalidated
-		entry := entry.(CacheEntry)
-		if now.Before(*entry.Expiry) {
-			resp := entry.Item.(map[string]Stakepool)
-			return &resp, nil
-		}
-	}
-
+func stakepoolData(service *Service) {
 	waitGroup := sync.WaitGroup{}
-	mtx := sync.Mutex{}
-	waitGroup.Add(len(*stakepools))
-	for key := range *stakepools {
+	waitGroup.Add(len(*service.Stakepools))
+	for key := range *service.Stakepools {
 		// fetch the stakepool stats, trying the current version first
-		// and the initial version if an error occurs
-		go func(key string, stakepools *map[string]Stakepool, service *Service) {
+		// then the initial version if an error occurs
+		go func(key string, service *Service) {
 			defer waitGroup.Done()
-			stakepool := (*stakepools)[key]
-			err := stakepoolStats(service, &stakepool, StakepoolAPICurrentVersion)
+			err := stakepoolStats(service, key, StakepoolAPICurrentVersion)
 			if err != nil {
 				log.Println(err)
-				err := stakepoolStats(service, &stakepool, StakepoolAPIInitialVersion)
+				err := stakepoolStats(service, key, StakepoolAPIInitialVersion)
 				if err != nil {
 					log.Println(err)
-					return
 				}
 			}
-
-			mtx.Lock()
-			defer mtx.Unlock()
-			(*resp)[key] = stakepool
-		}(key, stakepools, service)
+		}(key, service)
 	}
-
 	waitGroup.Wait()
-	now = time.Now()
-	// cache updated pools
-	cacheEntry := CacheEntry{
-		Item:   *resp,
-		Expiry: getFutureTime(&now, 0, 0, 10, 0),
-	}
-	service.Cache.Store("gsd", cacheEntry)
-	return resp, nil
 }
 
 // GetCoinSupply is the handler func for the `/gsc` route.
@@ -623,13 +617,7 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 		writeJSONResponse(&writer, http.StatusOK, &respJSON)
 		return
 	case "gsd":
-		resp, err := stakepoolData(service)
-		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
-			return
-		}
-
-		respJSON, err := json.Marshal(resp)
+		respJSON, err := json.Marshal(service.Stakepools)
 		if err != nil {
 			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
 			return
