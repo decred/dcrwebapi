@@ -185,6 +185,11 @@ func NewService() *Service {
 			Network:              "mainnet",
 			URL:                  "https://pos.dcr.fans",
 		},
+		"Papa": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "mainnet",
+			URL:                  "https://stakey.net",
+		},
 	}
 
 	// fetch initial stakepool data
