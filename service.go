@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
@@ -53,6 +54,33 @@ type Stakepool struct {
 	UserCountActive int `json:"UserCountActive"`
 }
 
+// StakepoolSet represents a collection of stakepools
+type StakepoolSet map[string]Stakepool
+
+// MarshalJSON custom marshaler for StakepoolSet, preserves data set
+// randomness.
+func (set *StakepoolSet) MarshalJSON() ([]byte, error) {
+	buffer := bytes.NewBufferString("{")
+	length := len(*set)
+	count := 0
+
+	for key, value := range *set {
+		jsonValue, err := json.Marshal(value)
+		if err != nil {
+			return nil, err
+		}
+
+		buffer.WriteString(fmt.Sprintf("\"%s\":%s", key, string(jsonValue)))
+		count++
+		if count < length {
+			buffer.WriteString(",")
+		}
+	}
+
+	buffer.WriteString("}")
+	return buffer.Bytes(), nil
+}
+
 // CacheEntry represents a cache entry with a specified expiry
 type CacheEntry struct {
 	// the cached item
@@ -70,7 +98,7 @@ type Service struct {
 	// the service cache
 	Cache sync.Map
 	// the stakepools
-	Stakepools *map[string]Stakepool
+	Stakepools *StakepoolSet
 	// the ticker
 	Ticker *time.Ticker
 	// the pool update mutex
@@ -90,7 +118,7 @@ func NewService() *Service {
 	service.Router = http.NewServeMux()
 	service.Cache = sync.Map{}
 	service.Mutex = sync.Mutex{}
-	service.Stakepools = &map[string]Stakepool{
+	service.Stakepools = &StakepoolSet{
 		"Bravo": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
