@@ -190,6 +190,11 @@ func NewService() *Service {
 			Network:              "mainnet",
 			URL:                  "https://stakey.net",
 		},
+		"Ray": {
+			APIVersionsSupported: []interface{}{},
+			Network:              "mainnet",
+			URL:                  "https://dcrpos.idcray.com",
+		},
 	}
 
 	// fetch initial stakepool data
