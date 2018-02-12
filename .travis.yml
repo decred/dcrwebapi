@@ -1,7 +1,11 @@
+sudo: required
+
+services:
+  - docker
+
 language: go
 go:
   - 1.9.x
-sudo: false
 install:
   - go get -v github.com/alecthomas/gometalinter
   - gometalinter --install
@@ -14,3 +18,4 @@ script:
     --enable=gosimple
     --enable=unconvert
     --deadline=10m ./...
+  - docker build -t decred/dcrwebapi .
