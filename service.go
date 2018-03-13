@@ -34,9 +34,11 @@ type Stakepool struct {
 	Network string `json:"Network"`
 	// the stakepool url
 	URL string `json:"URL"`
+	// when the pool was added to this API
+	Launched int64 `json:"Launched"`
 	// the last updated time
-	LasUpdated int64 `json:"LastUpdated"`
-	// tmmature tickets
+	LastUpdated int64 `json:"LastUpdated"`
+	// immature tickets
 	Immature int `json:"Immature"`
 	// live tickets
 	Live int `json:"Live"`
@@ -48,6 +50,8 @@ type Stakepool struct {
 	PoolFees float64 `json:"PoolFees"`
 	// ticket proportion live
 	ProportionLive float64 `json:"ProportionLive"`
+	// ticket proportion missed
+	ProportionMissed float64 `json:"ProportionMissed"`
 	// the user count
 	UserCount int `json:"UserCount"`
 	// the active user count
@@ -118,82 +122,104 @@ func NewService() *Service {
 	service.Router = http.NewServeMux()
 	service.Cache = sync.Map{}
 	service.Mutex = sync.Mutex{}
+
+	// Historical launch dates have been collected from these sources:
+	//   - https://github.com/decred/dcrwebapi/commit/09113670a5b411c9c0c988e5a8ea627ee00ac007
+	//   - https://forum.decred.org/threads/ultrapool-eu-new-stakepool.5276/#post-25188
+	//   - https://decred.slack.com/
+	//   - https://github.com/decred/dcrwebapi/commit/9374b388624ad2b3f587d3effef39fc752d892ec
+	//   - https://github.com/decred/dcrwebapi/commit/e76f621d33050a506ab733ff2bc2f47f9366726c
 	service.Stakepools = &StakepoolSet{
 		"Bravo": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
 			URL:                  "https://dcr.stakepool.net",
+			Launched:             getUnixTime(2016, 5, 22, 22, 54),
 		},
 		"Delta": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
 			URL:                  "https://dcr.stakeminer.com",
+			Launched:             getUnixTime(2016, 5, 19, 15, 19),
 		},
 		"Echo": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
 			URL:                  "https://pool.d3c.red",
+			Launched:             getUnixTime(2016, 5, 23, 17, 59),
 		},
 		// Stakepool APi is unreachable for Foxtrot
 		// "Foxtrot" = Stakepool{
 		//   APIVersionsSupported: []interface{}{},
 		//   Network:              "mainnet",
 		//   URL:                  "https://dcrstakes.com",
+		//   Launched:             getUnixTime(2016, 5, 31, 13, 23),
 		// }
 		"Golf": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
 			URL:                  "https://stakepool.dcrstats.com",
+			Launched:             getUnixTime(2016, 5, 25, 9, 9),
 		},
 		"Hotel": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
 			URL:                  "https://stake.decredbrasil.com",
+			Launched:             getUnixTime(2016, 5, 28, 19, 31),
 		},
 		"India": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
 			URL:                  "https://stakepool.eu",
+			Launched:             getUnixTime(2016, 5, 22, 18, 58),
 		},
 		"Juliett": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
 			URL:                  "https://dcr.ubiqsmart.com",
+			Launched:             getUnixTime(2016, 6, 12, 20, 52),
 		},
 		"Kilo": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "testnet",
 			URL:                  "https://teststakepool.decred.org",
+			Launched:             getUnixTime(2017, 2, 7, 22, 0),
 		},
 		"Lima": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
 			URL:                  "https://ultrapool.eu",
+			Launched:             getUnixTime(2017, 5, 23, 10, 16),
 		},
 		"Mike": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
 			URL:                  "https://dcr.farm",
+			Launched:             getUnixTime(2017, 12, 21, 17, 50),
 		},
 		"November": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
 			URL:                  "https://decred.raqamiya.net",
+			Launched:             getUnixTime(2017, 12, 21, 17, 50),
 		},
 		"Oscar": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
 			URL:                  "https://pos.dcr.fans",
+			Launched:             getUnixTime(2017, 12, 21, 17, 50),
 		},
 		"Papa": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
 			URL:                  "https://stakey.net",
+			Launched:             getUnixTime(2018, 1, 22, 21, 04),
 		},
 		"Ray": {
 			APIVersionsSupported: []interface{}{},
 			Network:              "mainnet",
 			URL:                  "https://dcrpos.idcray.com",
+			Launched:             getUnixTime(2018, 2, 12, 14, 44),
 		},
 	}
 
@@ -521,12 +547,15 @@ func stakepoolStats(service *Service, key string, apiVersion int) error {
 		_, hasMissed := data["Missed"]
 		_, hasPoolFees := data["PoolFees"]
 		_, hasProportionLive := data["ProportionLive"]
+		_, hasProportionMissed := data["ProportionMissed"]
 		_, hasUserCount := data["UserCount"]
 		_, hasUserCountActive := data["UserCountActive"]
 		_, hasAPIVersionsSupported := data["APIVersionsSupported"]
-		hasRequiredFields := hasImmature && hasLive && hasVoted &&
-			hasMissed && hasPoolFees && hasProportionLive &&
+
+		hasRequiredFields := hasImmature && hasLive && hasVoted && hasMissed &&
+			hasPoolFees && hasProportionLive && hasProportionMissed &&
 			hasUserCount && hasUserCountActive && hasAPIVersionsSupported
+
 		if hasRequiredFields {
 			pool.Immature = int(data["Immature"].(float64))
 			pool.Live = int(data["Live"].(float64))
@@ -534,11 +563,12 @@ func stakepoolStats(service *Service, key string, apiVersion int) error {
 			pool.Missed = int(data["Missed"].(float64))
 			pool.PoolFees = data["PoolFees"].(float64)
 			pool.ProportionLive = data["ProportionLive"].(float64)
+			pool.ProportionMissed = data["ProportionMissed"].(float64)
 			pool.UserCount = int(data["UserCount"].(float64))
 			pool.UserCountActive = int(data["UserCountActive"].(float64))
 			pool.APIVersionsSupported = data["APIVersionsSupported"].([]interface{})
 			pool.APIEnabled = true
-			pool.LasUpdated = time.Now().Unix()
+			pool.LastUpdated = time.Now().Unix()
 			service.Mutex.Lock()
 			(*service.Stakepools)[key] = pool
 			service.Mutex.Unlock()
@@ -569,6 +599,10 @@ func stakepoolData(service *Service) {
 		}(key, service)
 	}
 	waitGroup.Wait()
+}
+
+func getUnixTime(year int, month time.Month, day, hour, min int) int64 {
+	return time.Date(year, month, day, hour, min, 0, 0, time.UTC).Unix()
 }
 
 // GetCoinSupply is the handler func for the `/gsc` route.
