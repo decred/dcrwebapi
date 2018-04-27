@@ -5,7 +5,7 @@ services:
 
 language: go
 go:
-  - 1.9.x
+  - 1.10.x
 install:
   - go get -v github.com/alecthomas/gometalinter
   - gometalinter --install
@@ -18,4 +18,5 @@ script:
     --enable=gosimple
     --enable=unconvert
     --deadline=10m ./...
+  - go build
   - docker build -t decred/dcrwebapi .

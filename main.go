@@ -7,12 +7,11 @@ import (
 
 const (
 	// the listening port
-	port = ":80"
-	//port = ":9155"
+	defaultPort = ":8080"
 )
 
 func main() {
 	service := NewService()
-	log.Println("dcrwebapi started on", port)
-	log.Fatal(http.ListenAndServe(port, service.Router))
+	log.Println("dcrwebapi starting on", defaultPort)
+	log.Fatal(http.ListenAndServe(defaultPort, service.Router))
 }
