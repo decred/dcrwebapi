@@ -241,7 +241,7 @@ func NewService() *Service {
 			"Ethan": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
-				URL:                  "https://tokensmart.io/tickets",
+				URL:                  "https://tokensmart.io",
 				Launched:             getUnixTime(2018, 4, 2, 16, 44),
 			},
 		},
