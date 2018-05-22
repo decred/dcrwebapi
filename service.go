@@ -238,6 +238,12 @@ func NewService() *Service {
 				URL:                  "https://dcrpos.idcray.com",
 				Launched:             getUnixTime(2018, 2, 12, 14, 44),
 			},
+			"Ethan": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "mainnet",
+				URL:                  "https://tokensmart.io",
+				Launched:             getUnixTime(2018, 4, 3, 14, 44),
+			},		
 		},
 	}
 
