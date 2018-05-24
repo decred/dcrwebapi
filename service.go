@@ -121,10 +121,12 @@ type Service struct {
 	Cache sync.Map
 	// the stakepools
 	Stakepools StakepoolSet
+	// the stakepool keys
+	StakepoolKeys []string
 	// the ticker
 	Ticker *time.Ticker
 	// the pool update mutex
-	Mutex sync.Mutex
+	Mutex sync.RWMutex
 }
 
 // NewService creates a new dcrwebapi service.
@@ -138,7 +140,7 @@ func NewService() *Service {
 		},
 		Router: http.NewServeMux(),
 		Cache:  sync.Map{},
-		Mutex:  sync.Mutex{},
+		Mutex:  sync.RWMutex{},
 
 		// Historical launch dates have been collected from these sources:
 		//   - https://github.com/decred/dcrwebapi/commit/09113670a5b411c9c0c988e5a8ea627ee00ac007
@@ -245,6 +247,12 @@ func NewService() *Service {
 				Launched:             getUnixTime(2018, 4, 2, 16, 44),
 			},
 		},
+		StakepoolKeys: []string{},
+	}
+
+	// get the stakepool key set.
+	for key := range service.Stakepools {
+		service.StakepoolKeys = append(service.StakepoolKeys, key)
 	}
 
 	// fetch initial stakepool data
@@ -544,7 +552,11 @@ func coinSupply(service *Service) (map[string]interface{}, error) {
 
 // stakepoolStats fetches statistics for a stakepool
 func stakepoolStats(service *Service, key string, apiVersion int) error {
-	pool := service.Stakepools[key]
+	var pool Stakepool
+
+	service.Mutex.RLock()
+	pool = service.Stakepools[key]
+	service.Mutex.RUnlock()
 	poolURL := fmt.Sprintf("%s/api/v%d/stats", pool.URL, apiVersion)
 	poolReq, err := http.NewRequest("GET", poolURL, nil)
 	if err != nil {
@@ -575,8 +587,8 @@ func stakepoolStats(service *Service, key string, apiVersion int) error {
 
 	status := poolData["status"].(string)
 	if status != "success" {
-		return fmt.Errorf("expected success status, got %v",
-			status)
+		return fmt.Errorf("expected success status, got %v status. Response: %v",
+			status, string(poolRespBody))
 	}
 
 	data := poolData["data"].(map[string]interface{})
@@ -623,7 +635,7 @@ func stakepoolData(service *Service) {
 	var waitGroup sync.WaitGroup
 
 	waitGroup.Add(len(service.Stakepools))
-	for key := range service.Stakepools {
+	for _, key := range service.StakepoolKeys {
 		// fetch the stakepool stats, trying the current version first
 		// then the initial version if an error occurs
 		go func(key string, service *Service) {
