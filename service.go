@@ -608,7 +608,7 @@ func stakepoolStats(service *Service, key string, apiVersion int) error {
 		hasUserCount && hasUserCountActive && hasAPIVersionsSupported
 
 	if !hasRequiredFields {
-		return nil
+		return fmt.Errorf("%v: missing required fields: %+v", pool.URL, data)
 	}
 
 	pool.Immature = int(data["Immature"].(float64))
