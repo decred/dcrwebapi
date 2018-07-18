@@ -1,4 +1,4 @@
-FROM golang:1.10.1
+FROM golang:1.10.2
 COPY . /go/dcrwebapi
 WORKDIR /go/dcrwebapi
 RUN go build
