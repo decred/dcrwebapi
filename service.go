@@ -252,6 +252,12 @@ func NewService() *Service {
 				URL:                  "https://dcrpool.ibitlin.com",
 				Launched:             getUnixTime(2018, 7, 7, 1, 10),
 			},
+			"James": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "mainnet",
+				URL:                  "https://www.d1pool.com",
+				Launched:             getUnixTime(2018, 8, 9, 22, 10),
+			},
 		},
 		StakepoolKeys: []string{},
 	}
