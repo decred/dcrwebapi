@@ -252,7 +252,7 @@ func NewService() *Service {
 				URL:                  "https://dcrpool.ibitlin.com",
 				Launched:             getUnixTime(2018, 7, 7, 1, 10),
 			},
-			"Gc": {
+			"Yumi": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://www.d1pool.com",
