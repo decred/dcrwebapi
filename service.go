@@ -240,6 +240,12 @@ func NewService() *Service {
 				URL:                  "https://dcrpos.idcray.com",
 				Launched:             getUnixTime(2018, 2, 12, 14, 44),
 			},
+			"Sierra": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "mainnet",
+				URL:                  "https://decredvoting.com",
+				Launched:             getUnixTime(2018, 8, 30, 11, 55),
+			},
 			"Ethan": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
