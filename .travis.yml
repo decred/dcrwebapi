@@ -5,12 +5,13 @@ services:
 
 language: go
 go:
-  - 1.10.x
+  - 1.11.x
 install:
   - go get -v github.com/alecthomas/gometalinter
   - gometalinter --install
 script:
-  - export PATH=$PATH:$HOME/gopath/bin
+  - go build ./...
+  - export GO111MODULE=off
   - gometalinter --vendor --disable-all
     --enable=gofmt
     --enable=golint
@@ -18,5 +19,4 @@ script:
     --enable=gosimple
     --enable=unconvert
     --deadline=10m ./...
-  - go build
   - docker build -t decred/dcrwebapi .
