@@ -261,7 +261,7 @@ func NewService() *Service {
 			"James": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
-				URL:                  "https://www.d1pool.com",
+				URL:                  "https://d1pool.com",
 				Launched:             getUnixTime(2018, 8, 9, 22, 10),
 			},
 		},
