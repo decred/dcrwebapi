@@ -264,6 +264,12 @@ func NewService() *Service {
 				URL:                  "https://d1pool.com",
 				Launched:             getUnixTime(2018, 8, 9, 22, 10),
 			},
+			"Scarmani": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "mainnet",
+				URL:                  "https://stakey.com",
+				Launched:             getUnixTime(2018, 10, 12, 15, 10),
+			},
 		},
 		StakepoolKeys: []string{},
 	}
