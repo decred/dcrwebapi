@@ -270,6 +270,12 @@ func NewService() *Service {
 				URL:                  "https://stakey.com",
 				Launched:             getUnixTime(2018, 10, 12, 15, 10),
 			},
+			"Mega": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "mainnet",
+				URL:                  "https://dcrpos.megapool.info",
+				Launched:             getUnixTime(2018, 10, 10, 12, 30),
+			},
 		},
 		StakepoolKeys: []string{},
 	}
