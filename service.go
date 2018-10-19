@@ -270,6 +270,12 @@ func NewService() *Service {
 				URL:                  "https://stakey.com",
 				Launched:             getUnixTime(2018, 10, 12, 15, 10),
 			},
+			"Zeta": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "mainnet",
+				URL:                  "https://dcrstake.coinmine.pl",
+				Launched:             getUnixTime(2018, 10, 19, 00, 00),
+			},
 		},
 		StakepoolKeys: []string{},
 	}
