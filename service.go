@@ -274,7 +274,7 @@ func NewService() *Service {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://dcrpos.megapool.info",
-				Launched:             getUnixTime(2018, 10, 10, 12, 30),
+				Launched:             getUnixTime(2018, 10, 20, 9, 30),
 			},
 		},
 		StakepoolKeys: []string{},
