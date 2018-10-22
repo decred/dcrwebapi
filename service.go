@@ -274,7 +274,7 @@ func NewService() *Service {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://dcrstake.coinmine.pl",
-				Launched:             getUnixTime(2018, 10, 19, 00, 00),
+				Launched:             getUnixTime(2018, 10, 22, 22, 30),
 			},
 		},
 		StakepoolKeys: []string{},
