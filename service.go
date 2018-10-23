@@ -276,6 +276,12 @@ func NewService() *Service {
 				URL:                  "https://dcrpos.megapool.info",
 				Launched:             getUnixTime(2018, 10, 20, 9, 30),
 			},
+			"Zeta": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "mainnet",
+				URL:                  "https://dcrstake.coinmine.pl",
+				Launched:             getUnixTime(2018, 10, 22, 22, 30),
+      			},
 		},
 		StakepoolKeys: []string{},
 	}
