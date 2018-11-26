@@ -171,13 +171,6 @@ func NewService() *Service {
 				URL:                  "https://pool.d3c.red",
 				Launched:             getUnixTime(2016, 5, 23, 17, 59),
 			},
-			// Stakepool API is unreachable for Foxtrot
-			// "Foxtrot" = Stakepool{
-			//   APIVersionsSupported: []interface{}{},
-			//   Network:              "mainnet",
-			//   URL:                  "https://dcrstakes.com",
-			//   Launched:             getUnixTime(2016, 5, 31, 13, 23),
-			// }
 			"Golf": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
@@ -421,7 +414,7 @@ func downloadCount(service *Service) ([]string, error) {
 	// cache response
 	cacheEntry := CacheEntry{
 		Item:   resp,
-		Expiry: getFutureTime(&now, 0, 4, 0, 0),
+		Expiry: now.Add(4 * time.Hour),
 	}
 	service.Cache.Store("dc", cacheEntry)
 
@@ -465,7 +458,7 @@ func downloadsImageCache(service *Service) (string, error) {
 	// cache response
 	cacheEntry := CacheEntry{
 		Item:   updatedSVG,
-		Expiry: getFutureTime(&now, 0, 4, 0, 0),
+		Expiry: now.Add(4 * time.Hour),
 	}
 	service.Cache.Store("dic", cacheEntry)
 	return updatedSVG, nil
@@ -516,7 +509,7 @@ func insightStatus(service *Service) (map[string]interface{}, error) {
 	// cache response
 	cacheEntry := CacheEntry{
 		Item:   status,
-		Expiry: getFutureTime(&now, 0, 0, 1, 0),
+		Expiry: now.Add(1 * time.Minute),
 	}
 	service.Cache.Store("gis", cacheEntry)
 	return status, nil
@@ -583,7 +576,7 @@ func coinSupply(service *Service) (map[string]interface{}, error) {
 	// cache response
 	cacheEntry := CacheEntry{
 		Item:   resp,
-		Expiry: getFutureTime(&now, 0, 0, 1, 0),
+		Expiry: now.Add(1 * time.Minute),
 	}
 	service.Cache.Store("gsc", cacheEntry)
 
