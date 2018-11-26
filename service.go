@@ -127,8 +127,6 @@ type Service struct {
 	Stakepools StakepoolSet
 	// the stakepool keys
 	StakepoolKeys []string
-	// the ticker
-	Ticker *time.Ticker
 	// the pool update mutex
 	Mutex sync.RWMutex
 }
@@ -292,9 +290,9 @@ func NewService() *Service {
 	stakepoolData(&service)
 
 	// start stakepool update ticker
-	service.Ticker = time.NewTicker(time.Minute * 5)
+	stakepoolTicker := time.NewTicker(time.Minute * 5)
 	go func() {
-		for range service.Ticker.C {
+		for range stakepoolTicker.C {
 			stakepoolData(&service)
 		}
 	}()
