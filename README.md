@@ -1,4 +1,7 @@
-# dcrwebapi
+dcrwebapi
+=========
+
+[![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 
 ## Build Docker image
 
@@ -28,3 +31,7 @@ By default, the container exposes port 80.
 ```sh
 docker run --rm -d -p [local port]:80 decred/dcrwebapi
 ```
+
+## License
+
+dcrwebapi is licensed under the [copyfree](http://copyfree.org) ISC License.
