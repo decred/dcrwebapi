@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"math"
 	"net/http"
-	"time"
 )
 
 // writeJSONResponse convenience func for writing json responses
@@ -42,15 +41,6 @@ func writeJSONErrorResponse(writer *http.ResponseWriter, code int, err error) {
 	(*writer).Header().Set("Vary", "Accept-Encoding")
 	(*writer).WriteHeader(code)
 	(*writer).Write(errorJSON)
-}
-
-// getFutureTime extends a base time to a future time using a duration
-func getFutureTime(date *time.Time, days time.Duration, hours time.Duration,
-	minutes time.Duration, seconds time.Duration) time.Time {
-	duration := ((time.Hour * 24) * days) + (time.Hour * hours) + (time.Minute * minutes) + (time.Second * seconds)
-	futureTime := date.Add(duration)
-
-	return futureTime
 }
 
 // round rounding func
