@@ -199,12 +199,6 @@ func NewService() *Service {
 				URL:                  "https://dcr.ubiqsmart.com",
 				Launched:             getUnixTime(2016, 6, 12, 20, 52),
 			},
-			"Kilo": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "testnet",
-				URL:                  "https://teststakepool.decred.org",
-				Launched:             getUnixTime(2017, 2, 7, 22, 0),
-			},
 			"Lima": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
