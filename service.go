@@ -26,6 +26,12 @@ const (
 
 	// StakepoolAPICurrentVersion is the current stakepool API version.
 	StakepoolAPICurrentVersion = 2
+
+	// binariesAPIURL defines the GitHub URL to the binaries API.
+	binariesAPIURL = "https://api.github.com/repos/decred/decred-binaries/releases"
+
+	// releasesAPIURL defines the GitHub URL to the releases API.
+	releasesAPIURL = "https://api.github.com/repos/decred/decred-release/releases"
 )
 
 // Stakepool represents a decred stakepool solely for voting delegation.
@@ -346,7 +352,7 @@ func downloadCount(service *Service) ([]string, error) {
 		// return cached response if not invalidated
 		entry, ok := entry.(CacheEntry)
 		if !ok {
-			return nil, fmt.Errorf("bad item")
+			return nil, fmt.Errorf("bad item in dc cache")
 		}
 
 		if now.Before(entry.Expiry) {
@@ -359,7 +365,7 @@ func downloadCount(service *Service) ([]string, error) {
 	}
 
 	// fetch all binaries
-	binReq, err := http.NewRequest("GET", "https://api.github.com/repos/decred/decred-binaries/releases", nil)
+	binReq, err := http.NewRequest("GET", binariesAPIURL, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -372,7 +378,8 @@ func downloadCount(service *Service) ([]string, error) {
 	defer binResp.Body.Close()
 
 	if binResp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("expected status code %d, got %d", http.StatusOK, binResp.StatusCode)
+		return nil, fmt.Errorf("%v: non-success status code %d",
+			binariesAPIURL, binResp.StatusCode)
 	}
 
 	binBody, err := ioutil.ReadAll(binResp.Body)
@@ -389,7 +396,7 @@ func downloadCount(service *Service) ([]string, error) {
 	countB := filterDownloadCount(binaries)
 
 	// fetch all releases
-	relReq, err := http.NewRequest("GET", "https://api.github.com/repos/decred/decred-release/releases", nil)
+	relReq, err := http.NewRequest("GET", releasesAPIURL, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -402,7 +409,8 @@ func downloadCount(service *Service) ([]string, error) {
 	defer relResp.Body.Close()
 
 	if relResp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("expected status code %d, got %d", http.StatusOK, relResp.StatusCode)
+		return nil, fmt.Errorf("%v: non-success status code %d",
+			releasesAPIURL, relResp.StatusCode)
 	}
 
 	relBody, err := ioutil.ReadAll(relResp.Body)
@@ -603,35 +611,40 @@ func stakepoolStats(service *Service, key string, apiVersion int) error {
 	poolURL := fmt.Sprintf("%s/api/v%d/stats", pool.URL, apiVersion)
 	poolReq, err := http.NewRequest("GET", poolURL, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("%v: failed to create request: %v",
+			poolURL, err)
 	}
 
 	poolReq.Header.Set("User-Agent", "decred/dcrweb bot")
 	poolResp, err := service.HTTPClient.Do(poolReq)
 	if err != nil {
-		return err
+		return fmt.Errorf("%v: failed to send request: %v",
+			poolURL, err)
 	}
 	defer poolResp.Body.Close()
 
 	if poolResp.StatusCode != http.StatusOK {
-		return fmt.Errorf("expected status code %d, got %d", http.StatusOK, poolResp.StatusCode)
+		return fmt.Errorf("%v: non-success status: %d",
+			poolURL, poolResp.StatusCode)
 	}
 
 	poolRespBody, err := ioutil.ReadAll(poolResp.Body)
 	if err != nil {
-		return err
+		return fmt.Errorf("%v: failed to read body: %v",
+			poolURL, err)
 	}
 
 	var poolData map[string]interface{}
 	err = json.Unmarshal(poolRespBody, &poolData)
 	if err != nil {
-		return err
+		return fmt.Errorf("%v: unmarshal failed: %v",
+			poolURL, err)
 	}
 
 	status := poolData["status"].(string)
 	if status != "success" {
-		return fmt.Errorf("expected success status, got %v status. Response: %v",
-			status, string(poolRespBody))
+		return fmt.Errorf("%v: non-success status '%v': %v",
+			poolURL, status, string(poolRespBody))
 	}
 
 	data := poolData["data"].(map[string]interface{})
@@ -651,7 +664,7 @@ func stakepoolStats(service *Service, key string, apiVersion int) error {
 		hasUserCount && hasUserCountActive && hasAPIVersionsSupported
 
 	if !hasRequiredFields {
-		return fmt.Errorf("%v: missing required fields: %+v", pool.URL, data)
+		return fmt.Errorf("%v: missing required fields: %+v", poolURL, data)
 	}
 
 	pool.Immature = int(data["Immature"].(float64))
