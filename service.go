@@ -797,7 +797,9 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 		writeJSONResponse(&writer, http.StatusOK, &respJSON)
 		return
 	case "gsd":
+		service.Mutex.RLock()
 		respJSON, err := json.Marshal(service.Stakepools)
+		service.Mutex.RUnlock()
 		if err != nil {
 			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
 			return
