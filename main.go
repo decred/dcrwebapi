@@ -7,6 +7,8 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/gorilla/handlers"
 )
 
 const (
@@ -17,5 +19,10 @@ const (
 func main() {
 	service := NewService()
 	log.Println("dcrwebapi starting on", defaultPort)
-	log.Fatal(http.ListenAndServe(defaultPort, service.Router))
+
+	origins := handlers.AllowedOrigins([]string{"*"})
+	methods := handlers.AllowedMethods([]string{"GET", "OPTIONS"})
+
+	log.Fatal(http.ListenAndServe(defaultPort,
+		handlers.CORS(origins, methods)(service.Router)))
 }
