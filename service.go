@@ -733,7 +733,6 @@ func (service *Service) GetCoinSupply(writer http.ResponseWriter, request *http.
 
 // HandleRoutes is the handler func for all endpoints exposed by the service
 func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.Request) {
-	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	err := request.ParseForm()
 	if err != nil {
 		writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)

@@ -10,8 +10,10 @@ install:
   - go get -v github.com/alecthomas/gometalinter
   - gometalinter --install
 script:
-  - go build ./...
-  - export GO111MODULE=off
+  - export GO111MODULE=on
+  - go build
+  - go mod vendor
+  - unset GO111MODULE
   - gometalinter --vendor --disable-all
     --enable=gofmt
     --enable=golint
