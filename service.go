@@ -157,6 +157,12 @@ func NewService() *Service {
 		//   - https://github.com/decred/dcrwebapi/commit/9374b388624ad2b3f587d3effef39fc752d892ec
 		//   - https://github.com/decred/dcrwebapi/commit/e76f621d33050a506ab733ff2bc2f47f9366726c
 		Stakepools: StakepoolSet{
+			"Grassfed": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "mainnet",
+				URL:                  "https://dcr.grassfed.network",
+				Launched:             getUnixTime(2019, 1, 10, 03, 27),
+			},
 			"Dittrex": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
