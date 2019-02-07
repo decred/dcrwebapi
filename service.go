@@ -6,6 +6,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -15,6 +16,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/google/go-github/v22/github"
 )
 
 const (
@@ -326,30 +329,6 @@ func NewService() *Service {
 	return &service
 }
 
-// filterDownloadCount filters the download dataset returning a map of
-// asset filenames and their download counts
-func filterDownloadCount(dataset []interface{}) int64 {
-	var count int64
-
-	for _, entry := range dataset {
-		entry := entry.(map[string]interface{})
-		_, hasAssets := entry["assets"].([]interface{})
-		if hasAssets {
-			assets := entry["assets"].([]interface{})
-			for _, asset := range assets {
-				asset := asset.(map[string]interface{})
-				_, hasName := asset["name"].(string)
-				_, hasDownloadCount := asset["download_count"].(float64)
-				if hasName && hasDownloadCount {
-					count += int64(asset["download_count"].(float64))
-				}
-			}
-		}
-	}
-
-	return count
-}
-
 // downloadCount calculates the cummulative download count for DCR binaries and releases
 func downloadCount(service *Service) ([]string, error) {
 	now := time.Now()
@@ -370,67 +349,32 @@ func downloadCount(service *Service) ([]string, error) {
 		}
 	}
 
-	// fetch all binaries
-	binReq, err := http.NewRequest("GET", binariesAPIURL, nil)
+	client := github.NewClient(nil)
+	binaries, _, err := client.Repositories.ListReleases(context.Background(),
+		"decred", "decred-binaries", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	binReq.Header.Set("User-Agent", "decred/dcrweb bot")
-	binResp, err := service.HTTPClient.Do(binReq)
-	if err != nil {
-		return nil, err
-	}
-	defer binResp.Body.Close()
-
-	if binResp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%v: non-success status code %d",
-			binariesAPIURL, binResp.StatusCode)
+	var countB int
+	for _, binary := range binaries {
+		for _, asset := range binary.Assets {
+			countB += asset.GetDownloadCount()
+		}
 	}
 
-	binBody, err := ioutil.ReadAll(binResp.Body)
+	releases, _, err := client.Repositories.ListReleases(context.Background(),
+		"decred", "decred-release", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var binaries []interface{}
-	err = json.Unmarshal(binBody, &binaries)
-	if err != nil {
-		return nil, err
+	var countR int
+	for _, release := range releases {
+		for _, asset := range release.Assets {
+			countR += asset.GetDownloadCount()
+		}
 	}
-
-	countB := filterDownloadCount(binaries)
-
-	// fetch all releases
-	relReq, err := http.NewRequest("GET", releasesAPIURL, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	relReq.Header.Set("User-Agent", "decred/dcrweb bot")
-	relResp, err := service.HTTPClient.Do(relReq)
-	if err != nil {
-		return nil, err
-	}
-	defer relResp.Body.Close()
-
-	if relResp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%v: non-success status code %d",
-			releasesAPIURL, relResp.StatusCode)
-	}
-
-	relBody, err := ioutil.ReadAll(relResp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var releases []interface{}
-	err = json.Unmarshal(relBody, &releases)
-	if err != nil {
-		return nil, err
-	}
-
-	countR := filterDownloadCount(releases)
 
 	count := countB + countR
 	countStr := fmt.Sprintf("%dk", count/1000)
