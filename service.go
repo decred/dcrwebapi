@@ -250,6 +250,12 @@ func NewService() *Service {
 				URL:                  "https://stakey.net",
 				Launched:             getUnixTime(2018, 1, 22, 21, 04),
 			},
+			"Quebec": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "testnet",
+				URL:                  "https://test.stakey.net",
+				Launched:             getUnixTime(2018, 1, 22, 21, 04),
+			},
 			"Ray": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
