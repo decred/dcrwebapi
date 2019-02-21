@@ -29,12 +29,6 @@ const (
 
 	// StakepoolAPICurrentVersion is the current stakepool API version.
 	StakepoolAPICurrentVersion = 2
-
-	// binariesAPIURL defines the GitHub URL to the binaries API.
-	binariesAPIURL = "https://api.github.com/repos/decred/decred-binaries/releases"
-
-	// releasesAPIURL defines the GitHub URL to the releases API.
-	releasesAPIURL = "https://api.github.com/repos/decred/decred-release/releases"
 )
 
 // Stakepool represents a decred stakepool solely for voting delegation.
