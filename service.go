@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 The Decred developers
+// Copyright (c) 2017-2019 The Decred developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -181,7 +181,7 @@ func NewService() *Service {
 			"Bravo": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
-				URL:                  "https://dcr.stakepool.net",
+				URL:                  "https://dcr.blue",
 				Launched:             getUnixTime(2016, 5, 22, 22, 54),
 			},
 			"Delta": {
