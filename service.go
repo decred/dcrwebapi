@@ -160,7 +160,7 @@ func NewService() *Service {
 		//   - https://github.com/decred/dcrwebapi/commit/9374b388624ad2b3f587d3effef39fc752d892ec
 		//   - https://github.com/decred/dcrwebapi/commit/e76f621d33050a506ab733ff2bc2f47f9366726c
 		Stakepools: StakepoolSet{
-			"testpool": {
+			"Alfa": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "testnet",
 				URL:                  "https://test-dcrpool.dittrex.com",
@@ -321,6 +321,7 @@ func NewService() *Service {
 	}
 
 	// get the stakepool key set.
+	service.StakepoolKeys = make([]string, 0, len(service.Stakepools))
 	for key := range service.Stakepools {
 		service.StakepoolKeys = append(service.StakepoolKeys, key)
 	}
