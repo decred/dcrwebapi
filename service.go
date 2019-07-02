@@ -17,6 +17,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/decred/dcrstakepool/poolapi"
 	"github.com/google/go-github/v26/github"
 )
 
@@ -33,16 +34,6 @@ const (
 
 // Stakepool represents a decred stakepool solely for voting delegation.
 type Stakepool struct {
-	// APIEnabled defines if the api is enabled.
-	APIEnabled bool `json:"APIEnabled"`
-
-	// APIVersionsSupported contains the collection of collection of API
-	// versions supported.
-	APIVersionsSupported []interface{} `json:"APIVersionsSupported"`
-
-	// Network defines the active network.
-	Network string `json:"Network"`
-
 	// URL contains the URL.
 	URL string `json:"URL"`
 
@@ -53,32 +44,8 @@ type Stakepool struct {
 	// LastUpdated is the last updated time.
 	LastUpdated int64 `json:"LastUpdated"`
 
-	// Immature is the number of immature tickets.
-	Immature int `json:"Immature"`
-
-	// Live is the number of live tickets.
-	Live int `json:"Live"`
-
-	// Voted is the number of voted tickets.
-	Voted int `json:"Voted"`
-
-	// Missed is the number of missed votes.
-	Missed int `json:"Missed"`
-
-	// PoolFees is the pool fees.
-	PoolFees float64 `json:"PoolFees"`
-
-	// ProportionLive is the proportion of live tickets.
-	ProportionLive float64 `json:"ProportionLive"`
-
-	// ProportionMissed is the proportion of tickets missed.
-	ProportionMissed float64 `json:"ProportionMissed"`
-
-	// UserCount is the number of users.
-	UserCount int `json:"UserCount"`
-
-	// UserCountActive is the number of active users.
-	UserCountActive int `json:"UserCountActive"`
+	// Stats are the stakepool statistics.
+	Stats poolapi.Stats
 }
 
 // StakepoolSet represents a collection of stakepools.
@@ -155,160 +122,108 @@ func NewService() *Service {
 		//   - https://github.com/decred/dcrwebapi/commit/e76f621d33050a506ab733ff2bc2f47f9366726c
 		Stakepools: StakepoolSet{
 			"Alfa": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "testnet",
-				URL:                  "https://test-dcrpool.dittrex.com",
-				Launched:             getUnixTime(2019, 2, 17, 14, 0),
+				URL:      "https://test-dcrpool.dittrex.com",
+				Launched: getUnixTime(2019, 2, 17, 14, 0),
 			},
 			"Grassfed": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcr.grassfed.network",
-				Launched:             getUnixTime(2019, 1, 10, 03, 27),
+				URL:      "https://dcr.grassfed.network",
+				Launched: getUnixTime(2019, 1, 10, 03, 27),
 			},
 			"Dittrex": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcrpool.dittrex.com",
-				Launched:             getUnixTime(2018, 11, 28, 16, 13),
+				URL:      "https://dcrpool.dittrex.com",
+				Launched: getUnixTime(2018, 11, 28, 16, 13),
 			},
 			"Bravo": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcr.blue",
-				Launched:             getUnixTime(2016, 5, 22, 22, 54),
+				URL:      "https://dcr.blue",
+				Launched: getUnixTime(2016, 5, 22, 22, 54),
 			},
 			"Delta": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcr.stakeminer.com",
-				Launched:             getUnixTime(2016, 5, 19, 15, 19),
+				URL:      "https://dcr.stakeminer.com",
+				Launched: getUnixTime(2016, 5, 19, 15, 19),
 			},
 			"Echo": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://pool.d3c.red",
-				Launched:             getUnixTime(2016, 5, 23, 17, 59),
+				URL:      "https://pool.d3c.red",
+				Launched: getUnixTime(2016, 5, 23, 17, 59),
 			},
 			"Golf": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://stakepool.dcrstats.com",
-				Launched:             getUnixTime(2016, 5, 25, 9, 9),
+				URL:      "https://stakepool.dcrstats.com",
+				Launched: getUnixTime(2016, 5, 25, 9, 9),
 			},
 			"Hotel": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://stake.decredbrasil.com",
-				Launched:             getUnixTime(2016, 5, 28, 19, 31),
+				URL:      "https://stake.decredbrasil.com",
+				Launched: getUnixTime(2016, 5, 28, 19, 31),
 			},
 			"India": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://stakepool.eu",
-				Launched:             getUnixTime(2016, 5, 22, 18, 58),
+				URL:      "https://stakepool.eu",
+				Launched: getUnixTime(2016, 5, 22, 18, 58),
 			},
 			"Juliett": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcr.ubiqsmart.com",
-				Launched:             getUnixTime(2016, 6, 12, 20, 52),
+				URL:      "https://dcr.ubiqsmart.com",
+				Launched: getUnixTime(2016, 6, 12, 20, 52),
 			},
 			"Kilo": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "testnet",
-				URL:                  "https://teststakepool.decred.org",
-				Launched:             getUnixTime(2017, 2, 7, 22, 0),
+				URL:      "https://teststakepool.decred.org",
+				Launched: getUnixTime(2017, 2, 7, 22, 0),
 			},
 			"Lima": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://ultrapool.eu",
-				Launched:             getUnixTime(2017, 5, 23, 10, 16),
+				URL:      "https://ultrapool.eu",
+				Launched: getUnixTime(2017, 5, 23, 10, 16),
 			},
 			"Mike": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcr.farm",
-				Launched:             getUnixTime(2017, 12, 21, 17, 50),
+				URL:      "https://dcr.farm",
+				Launched: getUnixTime(2017, 12, 21, 17, 50),
 			},
 			"November": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://decred.raqamiya.net",
-				Launched:             getUnixTime(2017, 12, 21, 17, 50),
+				URL:      "https://decred.raqamiya.net",
+				Launched: getUnixTime(2017, 12, 21, 17, 50),
 			},
 			"Oscar": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://pos.dcr.fans",
-				Launched:             getUnixTime(2017, 12, 21, 17, 50),
+				URL:      "https://pos.dcr.fans",
+				Launched: getUnixTime(2017, 12, 21, 17, 50),
 			},
 			"Papa": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://stakey.net",
-				Launched:             getUnixTime(2018, 1, 22, 21, 04),
+				URL:      "https://stakey.net",
+				Launched: getUnixTime(2018, 1, 22, 21, 04),
 			},
 			"Quebec": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "testnet",
-				URL:                  "https://test.stakey.net",
-				Launched:             getUnixTime(2018, 1, 22, 21, 04),
+				URL:      "https://test.stakey.net",
+				Launched: getUnixTime(2018, 1, 22, 21, 04),
 			},
 			"Ray": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcrpos.idcray.com",
-				Launched:             getUnixTime(2018, 2, 12, 14, 44),
+				URL:      "https://dcrpos.idcray.com",
+				Launched: getUnixTime(2018, 2, 12, 14, 44),
 			},
 			"Sierra": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://decredvoting.com",
-				Launched:             getUnixTime(2018, 8, 30, 11, 55),
+				URL:      "https://decredvoting.com",
+				Launched: getUnixTime(2018, 8, 30, 11, 55),
 			},
 			"Ethan": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://tokensmart.io",
-				Launched:             getUnixTime(2018, 4, 2, 16, 44),
+				URL:      "https://tokensmart.io",
+				Launched: getUnixTime(2018, 4, 2, 16, 44),
 			},
 			"Life": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcrpool.ibitlin.com",
-				Launched:             getUnixTime(2018, 7, 7, 1, 10),
+				URL:      "https://dcrpool.ibitlin.com",
+				Launched: getUnixTime(2018, 7, 7, 1, 10),
 			},
 			"James": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://d1pool.com",
-				Launched:             getUnixTime(2018, 8, 9, 22, 10),
+				URL:      "https://d1pool.com",
+				Launched: getUnixTime(2018, 8, 9, 22, 10),
 			},
 			"Scarmani": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://stakey.com",
-				Launched:             getUnixTime(2018, 10, 12, 15, 10),
+				URL:      "https://stakey.com",
+				Launched: getUnixTime(2018, 10, 12, 15, 10),
 			},
 			"Mega": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcrpos.megapool.info",
-				Launched:             getUnixTime(2018, 10, 20, 9, 30),
+				URL:      "https://dcrpos.megapool.info",
+				Launched: getUnixTime(2018, 10, 20, 9, 30),
 			},
 			"Zeta": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcrstake.coinmine.pl",
-				Launched:             getUnixTime(2018, 10, 22, 22, 30),
+				URL:      "https://dcrstake.coinmine.pl",
+				Launched: getUnixTime(2018, 10, 22, 22, 30),
 			},
 			"Staked": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://decred.staked.us",
-				Launched:             getUnixTime(2018, 11, 28, 19, 30),
+				URL:      "https://decred.staked.us",
+				Launched: getUnixTime(2018, 11, 28, 19, 30),
 			},
 		},
 		StakepoolKeys: []string{},
@@ -591,50 +506,33 @@ func stakepoolStats(service *Service, key string, apiVersion int) error {
 			poolURL, err)
 	}
 
-	var poolData map[string]interface{}
-	err = json.Unmarshal(poolRespBody, &poolData)
+	var poolResponse poolapi.Response
+	err = json.Unmarshal(poolRespBody, &poolResponse)
 	if err != nil {
-		return fmt.Errorf("%v: unmarshal failed: %v",
+		return fmt.Errorf("%v: unmarshal response failed: %v",
+			poolURL, err)
+	}
+	if poolResponse.Status != "success" {
+		return fmt.Errorf("%v: non-success status '%v': %v",
+			poolURL, poolResponse.Status, string(poolRespBody))
+	}
+	if poolResponse.Data == nil {
+		return fmt.Errorf("%v: data portion empty", poolURL)
+	}
+	rawPoolStats, err := poolResponse.Data.MarshalJSON()
+	if err != nil {
+		return fmt.Errorf("%v: failed to marshal pool stats: %v",
 			poolURL, err)
 	}
 
-	status := poolData["status"].(string)
-	if status != "success" {
-		return fmt.Errorf("%v: non-success status '%v': %v",
-			poolURL, status, string(poolRespBody))
+	var poolStats poolapi.Stats
+	err = json.Unmarshal(rawPoolStats, &poolStats)
+	if err != nil {
+		return fmt.Errorf("%v: unmarshal stats failed: %v",
+			poolURL, err)
 	}
 
-	data := poolData["data"].(map[string]interface{})
-	_, hasImmature := data["Immature"]
-	_, hasLive := data["Live"]
-	_, hasVoted := data["Voted"]
-	_, hasMissed := data["Missed"]
-	_, hasPoolFees := data["PoolFees"]
-	_, hasProportionLive := data["ProportionLive"]
-	_, hasProportionMissed := data["ProportionMissed"]
-	_, hasUserCount := data["UserCount"]
-	_, hasUserCountActive := data["UserCountActive"]
-	_, hasAPIVersionsSupported := data["APIVersionsSupported"]
-
-	hasRequiredFields := hasImmature && hasLive && hasVoted && hasMissed &&
-		hasPoolFees && hasProportionLive && hasProportionMissed &&
-		hasUserCount && hasUserCountActive && hasAPIVersionsSupported
-
-	if !hasRequiredFields {
-		return fmt.Errorf("%v: missing required fields: %+v", poolURL, data)
-	}
-
-	pool.Immature = int(data["Immature"].(float64))
-	pool.Live = int(data["Live"].(float64))
-	pool.Voted = int(data["Voted"].(float64))
-	pool.Missed = int(data["Missed"].(float64))
-	pool.PoolFees = data["PoolFees"].(float64)
-	pool.ProportionLive = data["ProportionLive"].(float64)
-	pool.ProportionMissed = data["ProportionMissed"].(float64)
-	pool.UserCount = int(data["UserCount"].(float64))
-	pool.UserCountActive = int(data["UserCountActive"].(float64))
-	pool.APIVersionsSupported = data["APIVersionsSupported"].([]interface{})
-	pool.APIEnabled = true
+	pool.Stats = poolStats
 	pool.LastUpdated = time.Now().Unix()
 	service.Mutex.Lock()
 	service.Stakepools[key] = pool

@@ -1,3 +1,5 @@
+github.com/decred/dcrstakepool v1.1.1 h1:AbWUS3jlqwttDv5nOQddNE+hEoPBxJXoUzlzV5ArVtc=
+github.com/decred/dcrstakepool v1.1.1/go.mod h1:uoMngOvPvBW48G5sK7vN90CtvR3TdAg0927oJXfP5Tg=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/google/go-github/v26 v26.0.9 h1:RDv6xjhoFvGuAeYJwsIOC69nCfRna8cdoGw9hvX/Pc0=
 github.com/google/go-github/v26 v26.0.9/go.mod h1:v6/FmX9au22j4CtYxnMhJJkP+JfOQDXALk7hI+MPDNM=
