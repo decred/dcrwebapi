@@ -1,11 +1,7 @@
-sudo: required
-
-services:
-  - docker
-
 language: go
 go:
-  - 1.11.x
+  - 1.12.x
+sudo: false
 install:
   - go get -v github.com/golangci/golangci-lint/cmd/golangci-lint
 script:
@@ -17,4 +13,3 @@ script:
     --enable=vet
     --enable=gosimple
     --enable=unconvert
-  - docker build -t decred/dcrwebapi .
