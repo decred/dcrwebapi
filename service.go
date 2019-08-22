@@ -31,6 +31,19 @@ const (
 	StakepoolAPICurrentVersion = 2
 )
 
+// CoinSupply represents the data structure returned by the gcs request.
+type CoinSupply struct {
+	Airdrop            float64 `json:"Airdrop"`
+	CoinSupplyMined    float64 `json:"CoinSupplyMined"`
+	CoinSupplyMinedRaw float64 `json:"CoinSupplyMinedRaw"`
+	CoinSupplyTotal    float64 `json:"CoinSupplyTotal"`
+	PercentMined       float64 `json:"PercentMined"`
+	PoS                float64 `json:"Pos"`
+	PoW                float64 `json:"Pow"`
+	Premine            float64 `json:"Premine"`
+	Subsidy            float64 `json:"Subsidy"`
+}
+
 // Stakepool represents a decred stakepool solely for voting delegation.
 type Stakepool struct {
 	// APIEnabled defines if the api is enabled.
@@ -497,14 +510,14 @@ func insightStatus(service *Service) (map[string]interface{}, error) {
 }
 
 // coinSupply returns the DCR coin supply on mainnet
-func coinSupply(service *Service) (map[string]interface{}, error) {
+func coinSupply(service *Service) (*CoinSupply, error) {
 	now := time.Now()
 	entry, hasGSC := service.Cache.Load("gsc")
 	if hasGSC {
 		// return cached response if not invalidated
 		entry := entry.(CacheEntry)
 		if now.Before(entry.Expiry) {
-			resp := entry.Item.(map[string]interface{})
+			resp := entry.Item.(*CoinSupply)
 			return resp, nil
 		}
 	}
@@ -542,16 +555,16 @@ func coinSupply(service *Service) (map[string]interface{}, error) {
 	coinSupplyAvailable := round(currentCoinSupply/100000000, 0)
 	coinSupplyAfterGenesisBlock := coinSupplyAvailable - airdrop - premine
 	totalCoinSupply := 21000000.0
-	resp := map[string]interface{}{
-		"PercentMined":       round((coinSupplyAvailable/totalCoinSupply)*100, 1),
-		"CoinSupplyMined":    coinSupplyAvailable,
-		"CoinSupplyMinedRaw": currentCoinSupply,
-		"CoinSupplyTotal":    21000000,
-		"Airdrop":            round(airdrop/coinSupplyAvailable*100, 1),
-		"Premine":            round(premine/coinSupplyAvailable*100, 1),
-		"Pos":                round((coinSupplyAfterGenesisBlock*.3)/coinSupplyAvailable*100, 1),
-		"Pow":                round((coinSupplyAfterGenesisBlock*.6)/coinSupplyAvailable*100, 1),
-		"Subsidy":            round((coinSupplyAfterGenesisBlock*.1)/coinSupplyAvailable*100, 1),
+	resp := &CoinSupply{
+		PercentMined:       round((coinSupplyAvailable/totalCoinSupply)*100, 1),
+		CoinSupplyMined:    coinSupplyAvailable,
+		CoinSupplyMinedRaw: currentCoinSupply,
+		CoinSupplyTotal:    21000000,
+		Airdrop:            round(airdrop/coinSupplyAvailable*100, 1),
+		Premine:            round(premine/coinSupplyAvailable*100, 1),
+		PoS:                round((coinSupplyAfterGenesisBlock*.3)/coinSupplyAvailable*100, 1),
+		PoW:                round((coinSupplyAfterGenesisBlock*.6)/coinSupplyAvailable*100, 1),
+		Subsidy:            round((coinSupplyAfterGenesisBlock*.1)/coinSupplyAvailable*100, 1),
 	}
 
 	// cache response
