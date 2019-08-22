@@ -445,57 +445,6 @@ func downloadsImageCache(service *Service) (string, error) {
 	return updatedSVG, nil
 }
 
-// insightStatus fetches blockchain explorer related statistics
-// (mainnet.decred.org)
-func insightStatus(service *Service) (map[string]interface{}, error) {
-	now := time.Now()
-	entry, hasGIS := service.Cache.Load("gis")
-	if hasGIS {
-		// return cached response if not invalidated
-		entry := entry.(CacheEntry)
-		if now.Before(entry.Expiry) {
-			resp := entry.Item.(map[string]interface{})
-			return resp, nil
-		}
-	}
-
-	statusReq, err := http.NewRequest("GET",
-		"https://mainnet.decred.org/api/status", nil)
-	if err != nil {
-		return nil, err
-	}
-
-	statusReq.Header.Set("User-Agent", "decred/dcrweb bot")
-	statusResp, err := service.HTTPClient.Do(statusReq)
-	if err != nil {
-		return nil, err
-	}
-	defer statusResp.Body.Close()
-
-	if statusResp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("expected status code %d, got %d", http.StatusOK, statusResp.StatusCode)
-	}
-
-	statusBody, err := ioutil.ReadAll(statusResp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var status map[string]interface{}
-	err = json.Unmarshal(statusBody, &status)
-	if err != nil {
-		return nil, err
-	}
-
-	// cache response
-	cacheEntry := CacheEntry{
-		Item:   status,
-		Expiry: now.Add(1 * time.Minute),
-	}
-	service.Cache.Store("gis", cacheEntry)
-	return status, nil
-}
-
 // coinSupply returns the DCR coin supply on mainnet
 func coinSupply(service *Service) (map[string]interface{}, error) {
 	now := time.Now()
@@ -727,21 +676,6 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 		}
 
 		writeSVGResponse(&writer, http.StatusOK, &resp)
-		return
-	case "gis":
-		resp, err := insightStatus(service)
-		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
-			return
-		}
-
-		respJSON, err := json.Marshal(resp)
-		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
-			return
-		}
-
-		writeJSONResponse(&writer, http.StatusOK, &respJSON)
 		return
 	case "gcs":
 		resp, err := coinSupply(service)
