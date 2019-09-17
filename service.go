@@ -179,12 +179,6 @@ func NewService() *Service {
 				URL:                  "https://decred.everstake.one",
 				Launched:             getUnixTime(2019, 7, 23, 15, 46),
 			},
-			"Grassfed": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcr.grassfed.network",
-				Launched:             getUnixTime(2019, 1, 10, 03, 27),
-			},
 			"Dittrex": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
