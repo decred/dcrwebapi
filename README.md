@@ -1,7 +1,8 @@
 dcrwebapi
 =========
 
-[![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
+[![Build Status](https://github.com/decred/dcrwebapi/workflows/Build%20and%20Test/badge.svg)](https://github.com/decred/dcrwebapi/actions)
+[![ISC License](https://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 
 ## Build Docker image
 
