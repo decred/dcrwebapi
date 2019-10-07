@@ -5,11 +5,39 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"math"
 	"net/http"
+	"strings"
 )
+
+const (
+	// semanticAlphabet defines the allowed characters for the pre-release
+	// portion of a semantic version string.
+	semanticAlphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
+)
+
+// normalizeSemString returns the passed string stripped of all characters
+// which are not valid according to the provided semantic versioning alphabet.
+func normalizeSemString(str, alphabet string) string {
+	var result bytes.Buffer
+	for _, r := range str {
+		if strings.ContainsRune(alphabet, r) {
+			result.WriteRune(r)
+		}
+	}
+	return result.String()
+}
+
+// NormalizePreRelString returns the passed string stripped of all characters
+// which are not valid according to the semantic versioning guidelines for
+// pre-release strings.  In particular they MUST only contain characters in
+// semanticAlphabet.
+func NormalizePreRelString(str string) string {
+	return normalizeSemString(str, semanticAlphabet)
+}
 
 // writeJSONResponse convenience func for writing json responses
 func writeJSONResponse(writer *http.ResponseWriter, code int,
