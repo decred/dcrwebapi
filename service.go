@@ -92,6 +92,9 @@ type Stakepool struct {
 
 	// UserCountActive is the number of active users.
 	UserCountActive int `json:"UserCountActive"`
+
+	// Version is the software version advertised.
+	Version string `json:"Version"`
 }
 
 // StakepoolSet represents a collection of stakepools.
@@ -580,6 +583,7 @@ func stakepoolStats(service *Service, key string, apiVersion int) error {
 		return fmt.Errorf("%v: missing required fields: %+v", poolURL, data)
 	}
 
+	pool.Version = NormalizePreRelString(data["Version"].(string))
 	pool.Immature = int(data["Immature"].(float64))
 	pool.Live = int(data["Live"].(float64))
 	pool.Voted = int(data["Voted"].(float64))
