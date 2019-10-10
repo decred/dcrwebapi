@@ -14,9 +14,9 @@ import (
 )
 
 const (
-	// semanticAlphabet defines the allowed characters for the pre-release
+	// semanticBuildAlphabet defines the allowed characters for the build
 	// portion of a semantic version string.
-	semanticAlphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
+	semanticBuildAlphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-.+"
 )
 
 // normalizeSemString returns the passed string stripped of all characters
@@ -31,12 +31,12 @@ func normalizeSemString(str, alphabet string) string {
 	return result.String()
 }
 
-// NormalizePreRelString returns the passed string stripped of all characters
-// which are not valid according to the semantic versioning guidelines for
-// pre-release strings.  In particular they MUST only contain characters in
-// semanticAlphabet.
-func NormalizePreRelString(str string) string {
-	return normalizeSemString(str, semanticAlphabet)
+// NormalizeBuildString returns the passed string stripped of all characters
+// which are not valid according to the semantic versioning guidelines for build
+// metadata strings.  In particular they MUST only contain characters in
+// semanticBuildAlphabet.
+func NormalizeBuildString(str string) string {
+	return normalizeSemString(str, semanticBuildAlphabet)
 }
 
 // writeJSONResponse convenience func for writing json responses

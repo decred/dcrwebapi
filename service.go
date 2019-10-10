@@ -583,7 +583,11 @@ func stakepoolStats(service *Service, key string, apiVersion int) error {
 		return fmt.Errorf("%v: missing required fields: %+v", poolURL, data)
 	}
 
-	pool.Version = NormalizePreRelString(data["Version"].(string))
+	poolVersion := NormalizeBuildString(data["Version"].(string))
+	if len(poolVersion) > 13 {
+		poolVersion = poolVersion[0:13]
+	}
+	pool.Version = poolVersion
 	pool.Immature = int(data["Immature"].(float64))
 	pool.Live = int(data["Live"].(float64))
 	pool.Voted = int(data["Voted"].(float64))
