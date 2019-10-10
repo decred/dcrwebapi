@@ -1,6 +1,12 @@
-FROM golang:1.13
-COPY . /go/dcrwebapi
-WORKDIR /go/dcrwebapi
-RUN go build
-CMD ["./dcrwebapi"]
-EXPOSE 8080
+# build
+FROM golang:alpine AS builder
+
+WORKDIR $GOPATH/src/github.com/decred/dcrwebapi
+COPY . .
+
+RUN go build -o /go/bin/dcrwebapi
+
+# serve
+FROM alpine:edge
+COPY --from=builder /go/bin/dcrwebapi ./
+ENTRYPOINT [ "/dcrwebapi" ]
