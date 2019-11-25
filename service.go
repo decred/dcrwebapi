@@ -320,6 +320,12 @@ func NewService() *Service {
 				URL:                  "https://decred.staked.us",
 				Launched:             getUnixTime(2018, 11, 28, 19, 30),
 			},
+			"Tango": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "testnet",
+				URL:                  "https://testnet.decredvoting.com",
+				Launched:             getUnixTime(2018, 8, 30, 11, 55),
+			},
 		},
 		StakepoolKeys: []string{},
 	}
