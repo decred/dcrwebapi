@@ -468,7 +468,7 @@ func coinSupply(service *Service) (*CoinSupply, error) {
 		}
 	}
 
-	supplyReq, err := http.NewRequest("GET", "https://mainnet.decred.org/api/status?q=getCoinSupply", nil)
+	supplyReq, err := http.NewRequest("GET", "https://dcrdata.decred.org/api/supply", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -495,7 +495,7 @@ func coinSupply(service *Service) (*CoinSupply, error) {
 		return nil, err
 	}
 
-	currentCoinSupply := round(supply["coinsupply"].(float64), 1)
+	currentCoinSupply := round(supply["supply_mined"].(float64), 1)
 	airdrop := 840000.0
 	premine := 840000.0
 	coinSupplyAvailable := round(currentCoinSupply/100000000, 0)
