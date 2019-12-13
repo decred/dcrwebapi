@@ -45,6 +45,7 @@ func writeJSONResponse(writer *http.ResponseWriter, code int,
 	(*writer).Header().Set("Content-Type", "application/json")
 	(*writer).Header().Set("Strict-Transport-Security", "max-age=15552001")
 	(*writer).Header().Set("Vary", "Accept-Encoding")
+	(*writer).Header().Set("X-Content-Type-Options", "nosniff")
 	(*writer).WriteHeader(code)
 	(*writer).Write(*respJSON)
 }
