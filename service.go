@@ -320,6 +320,12 @@ func NewService() *Service {
 				URL:                  "https://testnet.decredvoting.com",
 				Launched:             getUnixTime(2018, 8, 30, 11, 55),
 			},
+			"99split": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "mainnet",
+				URL:                  "https://99split.com",
+				Launched:             getUnixTime(2019, 12, 17, 1, 57),
+			},
 		},
 		StakepoolKeys: []string{},
 	}
