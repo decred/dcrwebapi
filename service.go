@@ -326,13 +326,12 @@ func NewService() *Service {
 				URL:                  "https://99split.com",
 				Launched:             getUnixTime(2019, 12, 17, 1, 57),
 			},
-                        "Charlie": {
-                                APIVersionsSupported: []interface{}{},
-                                Network:              "mainnet",
-                                URL:                  "https://decred.yieldwallet.io",
-                                Launched:             getUnixTime(2020, 1, 29, 15, 32),
-                        },
-
+			"Charlie": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "mainnet",
+				URL:                  "https://decred.yieldwallet.io",
+				Launched:             getUnixTime(2020, 1, 29, 15, 32),
+			},
 		},
 		StakepoolKeys: []string{},
 	}
