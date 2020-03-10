@@ -332,6 +332,12 @@ func NewService() *Service {
 				URL:                  "https://decred.yieldwallet.io",
 				Launched:             getUnixTime(2020, 1, 29, 15, 32),
 			},
+			"Dinner": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "testnet",
+				URL:                  "https://dcrstakedinner.com",
+				Launched:             getUnixTime(2020, 3, 10, 15, 28),
+			},
 		},
 		StakepoolKeys: []string{},
 	}
