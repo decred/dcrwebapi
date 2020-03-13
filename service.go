@@ -170,23 +170,11 @@ func NewService() *Service {
 		//   - https://github.com/decred/dcrwebapi/commit/9374b388624ad2b3f587d3effef39fc752d892ec
 		//   - https://github.com/decred/dcrwebapi/commit/e76f621d33050a506ab733ff2bc2f47f9366726c
 		Stakepools: StakepoolSet{
-			"Alfa": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "testnet",
-				URL:                  "https://test-dcrpool.dittrex.com",
-				Launched:             getUnixTime(2019, 2, 17, 14, 0),
-			},
 			"Everstake": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://decred.everstake.one",
 				Launched:             getUnixTime(2019, 7, 23, 15, 46),
-			},
-			"Dittrex": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcrpool.dittrex.com",
-				Launched:             getUnixTime(2018, 11, 28, 16, 13),
 			},
 			"Bravo": {
 				APIVersionsSupported: []interface{}{},
