@@ -266,23 +266,11 @@ func NewService() *Service {
 				URL:                  "https://test.stakey.net",
 				Launched:             getUnixTime(2018, 1, 22, 21, 04),
 			},
-			"Ray": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcrpos.idcray.com",
-				Launched:             getUnixTime(2018, 2, 12, 14, 44),
-			},
 			"Sierra": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://decredvoting.com",
 				Launched:             getUnixTime(2018, 8, 30, 11, 55),
-			},
-			"Ethan": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://tokensmart.io",
-				Launched:             getUnixTime(2018, 4, 2, 16, 44),
 			},
 			"Life": {
 				APIVersionsSupported: []interface{}{},
