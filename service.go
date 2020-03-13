@@ -157,7 +157,7 @@ func NewService() *Service {
 			Transport: &http.Transport{
 				MaxIdleConnsPerHost: 2,
 			},
-			Timeout: time.Minute * 10,
+			Timeout: time.Second * 10,
 		},
 		Router: http.NewServeMux(),
 		Cache:  sync.Map{},
@@ -372,8 +372,11 @@ func downloadCount(service *Service) ([]string, error) {
 		}
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
 	client := github.NewClient(nil)
-	binaries, _, err := client.Repositories.ListReleases(context.Background(),
+	binaries, _, err := client.Repositories.ListReleases(ctx,
 		"decred", "decred-binaries", nil)
 	if err != nil {
 		return nil, err
@@ -386,7 +389,7 @@ func downloadCount(service *Service) ([]string, error) {
 		}
 	}
 
-	releases, _, err := client.Repositories.ListReleases(context.Background(),
+	releases, _, err := client.Repositories.ListReleases(ctx,
 		"decred", "decred-release", nil)
 	if err != nil {
 		return nil, err
