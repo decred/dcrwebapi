@@ -218,12 +218,6 @@ func NewService() *Service {
 				URL:                  "https://stake.decredbrasil.com",
 				Launched:             getUnixTime(2016, 5, 28, 19, 31),
 			},
-			"India": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://stakepool.eu",
-				Launched:             getUnixTime(2016, 5, 22, 18, 58),
-			},
 			"Juliett": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
