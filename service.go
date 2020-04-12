@@ -248,6 +248,12 @@ func NewService() *Service {
 				URL:                  "https://dcr.farm",
 				Launched:             getUnixTime(2017, 12, 21, 17, 50),
 			},
+			"November": {
+				APIVersionsSupported: []interface{}{},
+				Network:              "mainnet",
+				URL:                  "https://decred.raqamiya.net",
+				Launched:             getUnixTime(2017, 12, 21, 17, 50),
+			},
 			"Papa": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
