@@ -188,12 +188,6 @@ func NewService() *Service {
 				URL:                  "https://dcrpool.dittrex.com",
 				Launched:             getUnixTime(2018, 11, 28, 16, 13),
 			},
-			"Bravo": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcr.blue",
-				Launched:             getUnixTime(2016, 5, 22, 22, 54),
-			},
 			"Delta": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
