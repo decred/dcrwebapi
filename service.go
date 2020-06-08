@@ -230,12 +230,6 @@ func NewService() *Service {
 				URL:                  "https://teststakepool.decred.org",
 				Launched:             getUnixTime(2017, 2, 7, 22, 0),
 			},
-			"Lima": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://ultrapool.eu",
-				Launched:             getUnixTime(2017, 5, 23, 10, 16),
-			},
 			"Mike": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
