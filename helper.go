@@ -7,7 +7,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"math"
 	"net/http"
 	"strings"
@@ -48,16 +47,6 @@ func writeJSONResponse(writer *http.ResponseWriter, code int,
 	(*writer).Header().Set("X-Content-Type-Options", "nosniff")
 	(*writer).WriteHeader(code)
 	(*writer).Write(*respJSON)
-}
-
-// writeSVGResponse convenience func for writing svg responses
-func writeSVGResponse(writer *http.ResponseWriter, code int,
-	svg *string) {
-	(*writer).Header().Set("Strict-Transport-Security", "max-age=15552001")
-	(*writer).Header().Set("Vary", "Accept-Encoding")
-	(*writer).Header().Set("Content-Type", "image/svg+xml")
-	(*writer).WriteHeader(code)
-	fmt.Fprint(*writer, *svg)
 }
 
 // writeJSONErrorResponse convenience func for writing json error responses
