@@ -1,5 +1,5 @@
 # build
-FROM golang:alpine AS builder
+FROM golang:1.14-alpine AS builder
 
 WORKDIR $GOPATH/src/github.com/decred/dcrwebapi
 COPY . .
@@ -7,6 +7,6 @@ COPY . .
 RUN go build -o /go/bin/dcrwebapi
 
 # serve
-FROM alpine:edge
+FROM alpine:latest
 COPY --from=builder /go/bin/dcrwebapi ./
 ENTRYPOINT [ "/dcrwebapi" ]
