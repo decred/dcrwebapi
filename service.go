@@ -144,8 +144,6 @@ type Service struct {
 	Cache sync.Map
 	// the stakepools
 	Stakepools StakepoolSet
-	// the stakepool keys
-	StakepoolKeys []string
 	// the pool update mutex
 	Mutex sync.RWMutex
 }
@@ -321,13 +319,6 @@ func NewService() *Service {
 				Launched:             getUnixTime(2020, 3, 10, 15, 28),
 			},
 		},
-		StakepoolKeys: []string{},
-	}
-
-	// get the stakepool key set.
-	service.StakepoolKeys = make([]string, 0, len(service.Stakepools))
-	for key := range service.Stakepools {
-		service.StakepoolKeys = append(service.StakepoolKeys, key)
 	}
 
 	// fetch initial stakepool data
@@ -615,7 +606,7 @@ func stakepoolData(service *Service) {
 	var waitGroup sync.WaitGroup
 
 	waitGroup.Add(len(service.Stakepools))
-	for _, key := range service.StakepoolKeys {
+	for key := range service.Stakepools {
 		// fetch the stakepool stats, trying the current version first
 		// then the initial version if an error occurs
 		go func(key string, service *Service) {
