@@ -342,6 +342,37 @@ func NewService() *Service {
 	return &service
 }
 
+// getHTTP will use the services HTTP client to send a GET request to the
+// provided URL. Returns the response body, or an error.
+func (service *Service) getHTTP(url string) ([]byte, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("%v: failed to create request: %v",
+			url, err)
+	}
+
+	req.Header.Set("User-Agent", "decred/dcrweb bot")
+	poolResp, err := service.HTTPClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("%v: failed to send request: %v",
+			url, err)
+	}
+	defer poolResp.Body.Close()
+
+	if poolResp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%v: non-success status: %d",
+			url, poolResp.StatusCode)
+	}
+
+	respBody, err := ioutil.ReadAll(poolResp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("%v: failed to read body: %v",
+			url, err)
+	}
+
+	return respBody, nil
+}
+
 // downloadCount calculates the cummulative download count for DCR binaries and releases
 func downloadCount(service *Service) ([]string, error) {
 	now := time.Now()
@@ -418,23 +449,7 @@ func coinSupply(service *Service) (*CoinSupply, error) {
 		}
 	}
 
-	supplyReq, err := http.NewRequest("GET", "https://dcrdata.decred.org/api/supply", nil)
-	if err != nil {
-		return nil, err
-	}
-
-	supplyReq.Header.Set("User-Agent", "decred/dcrweb bot")
-	supplyResp, err := service.HTTPClient.Do(supplyReq)
-	if err != nil {
-		return nil, err
-	}
-	defer supplyResp.Body.Close()
-
-	if supplyResp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("expected status code %d, got %d", http.StatusOK, supplyResp.StatusCode)
-	}
-
-	supplyBody, err := ioutil.ReadAll(supplyResp.Body)
+	supplyBody, err := service.getHTTP("https://dcrdata.decred.org/api/supply")
 	if err != nil {
 		return nil, err
 	}
@@ -481,29 +496,10 @@ func stakepoolStats(service *Service, key string, apiVersion int) error {
 	pool = service.Stakepools[key]
 	service.Mutex.RUnlock()
 	poolURL := fmt.Sprintf("%s/api/v%d/stats", pool.URL, apiVersion)
-	poolReq, err := http.NewRequest("GET", poolURL, nil)
-	if err != nil {
-		return fmt.Errorf("%v: failed to create request: %v",
-			poolURL, err)
-	}
 
-	poolReq.Header.Set("User-Agent", "decred/dcrweb bot")
-	poolResp, err := service.HTTPClient.Do(poolReq)
+	poolRespBody, err := service.getHTTP(poolURL)
 	if err != nil {
-		return fmt.Errorf("%v: failed to send request: %v",
-			poolURL, err)
-	}
-	defer poolResp.Body.Close()
-
-	if poolResp.StatusCode != http.StatusOK {
-		return fmt.Errorf("%v: non-success status: %d",
-			poolURL, poolResp.StatusCode)
-	}
-
-	poolRespBody, err := ioutil.ReadAll(poolResp.Body)
-	if err != nil {
-		return fmt.Errorf("%v: failed to read body: %v",
-			poolURL, err)
+		return err
 	}
 
 	var poolData map[string]interface{}
