@@ -168,151 +168,151 @@ func NewService() *Service {
 				APIVersionsSupported: []interface{}{},
 				Network:              "testnet",
 				URL:                  "https://test-dcrpool.dittrex.com",
-				Launched:             getUnixTime(2019, 2, 17, 14, 0),
+				Launched:             getUnixTime(2019, 2, 17),
 			},
 			"Everstake": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://decred.everstake.one",
-				Launched:             getUnixTime(2019, 7, 23, 15, 46),
+				Launched:             getUnixTime(2019, 7, 23),
 			},
 			"Dittrex": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://dcrpool.dittrex.com",
-				Launched:             getUnixTime(2018, 11, 28, 16, 13),
+				Launched:             getUnixTime(2018, 11, 28),
 			},
 			"Delta": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://dcr.stakeminer.com",
-				Launched:             getUnixTime(2016, 5, 19, 15, 19),
+				Launched:             getUnixTime(2016, 5, 19),
 			},
 			"Echo": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://pool.d3c.red",
-				Launched:             getUnixTime(2016, 5, 23, 17, 59),
+				Launched:             getUnixTime(2016, 5, 23),
 			},
 			"Golf": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://stakepool.dcrstats.com",
-				Launched:             getUnixTime(2016, 5, 25, 9, 9),
+				Launched:             getUnixTime(2016, 5, 25),
 			},
 			"Hotel": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://stake.decredbrasil.com",
-				Launched:             getUnixTime(2016, 5, 28, 19, 31),
+				Launched:             getUnixTime(2016, 5, 28),
 			},
 			"India": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://stakepool.eu",
-				Launched:             getUnixTime(2016, 5, 22, 18, 58),
+				Launched:             getUnixTime(2016, 5, 22),
 			},
 			"Juliett": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://dcr.ubiqsmart.com",
-				Launched:             getUnixTime(2016, 6, 12, 20, 52),
+				Launched:             getUnixTime(2016, 6, 12),
 			},
 			"Kilo": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "testnet",
 				URL:                  "https://teststakepool.decred.org",
-				Launched:             getUnixTime(2017, 2, 7, 22, 0),
+				Launched:             getUnixTime(2017, 2, 7),
 			},
 			"Lima": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://ultrapool.eu",
-				Launched:             getUnixTime(2017, 5, 23, 10, 16),
+				Launched:             getUnixTime(2017, 5, 23),
 			},
 			"Mike": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://dcr.farm",
-				Launched:             getUnixTime(2017, 12, 21, 17, 50),
+				Launched:             getUnixTime(2017, 12, 21),
 			},
 			"November": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://decred.raqamiya.net",
-				Launched:             getUnixTime(2017, 12, 21, 17, 50),
+				Launched:             getUnixTime(2017, 12, 21),
 			},
 			"Papa": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://stakey.net",
-				Launched:             getUnixTime(2018, 1, 22, 21, 04),
+				Launched:             getUnixTime(2018, 1, 22),
 			},
 			"Quebec": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "testnet",
 				URL:                  "https://test.stakey.net",
-				Launched:             getUnixTime(2018, 1, 22, 21, 04),
+				Launched:             getUnixTime(2018, 1, 22),
 			},
 			"Sierra": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://decredvoting.com",
-				Launched:             getUnixTime(2018, 8, 30, 11, 55),
+				Launched:             getUnixTime(2018, 8, 30),
 			},
 			"Life": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://dcrpool.ibitlin.com",
-				Launched:             getUnixTime(2018, 7, 7, 1, 10),
+				Launched:             getUnixTime(2018, 7, 7),
 			},
 			"Scarmani": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://stakey.com",
-				Launched:             getUnixTime(2018, 10, 12, 15, 10),
+				Launched:             getUnixTime(2018, 10, 12),
 			},
 			"Mega": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://dcrpos.megapool.info",
-				Launched:             getUnixTime(2018, 10, 20, 9, 30),
+				Launched:             getUnixTime(2018, 10, 20),
 			},
 			"Zeta": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://dcrstake.coinmine.pl",
-				Launched:             getUnixTime(2018, 10, 22, 22, 30),
+				Launched:             getUnixTime(2018, 10, 22),
 			},
 			"Staked": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://decred.staked.us",
-				Launched:             getUnixTime(2018, 11, 28, 19, 30),
+				Launched:             getUnixTime(2018, 11, 28),
 			},
 			"Tango": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "testnet",
 				URL:                  "https://testnet.decredvoting.com",
-				Launched:             getUnixTime(2018, 8, 30, 11, 55),
+				Launched:             getUnixTime(2018, 8, 30),
 			},
 			"99split": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://99split.com",
-				Launched:             getUnixTime(2019, 12, 17, 1, 57),
+				Launched:             getUnixTime(2019, 12, 17),
 			},
 			"Charlie": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://decred.yieldwallet.io",
-				Launched:             getUnixTime(2020, 1, 29, 15, 32),
+				Launched:             getUnixTime(2020, 1, 29),
 			},
 			"Dinner": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "testnet",
 				URL:                  "https://dcrstakedinner.com",
-				Launched:             getUnixTime(2020, 3, 10, 15, 28),
+				Launched:             getUnixTime(2020, 3, 10),
 			},
 		},
 	}
@@ -573,8 +573,8 @@ func stakepoolData(service *Service) {
 	waitGroup.Wait()
 }
 
-func getUnixTime(year int, month time.Month, day, hour, min int) int64 {
-	return time.Date(year, month, day, hour, min, 0, 0, time.UTC).Unix()
+func getUnixTime(year int, month time.Month, day int) int64 {
+	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC).Unix()
 }
 
 // GetCoinSupply is the handler func for the `/gsc` route.
