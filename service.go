@@ -40,6 +40,25 @@ type CoinSupply struct {
 	Subsidy            float64 `json:"Subsidy"`
 }
 
+// Vsp contains information about a single Voting Service Provider. Includes
+// info hard-coded in dcrwebapi and info retrieved from the VSPs /vspinfo
+// endpoint.
+type Vsp struct {
+	// Hard-coded in dcrwebapi.
+	Network  string `json:"network"`
+	Launched int64  `json:"launched"`
+	// Set by dcrwebapi each time info is successfully updated.
+	LastUpdated int64 `json:"lastupdated"`
+	// Retrieved from the /api/vspinfo.
+	APIVersions   []int64 `json:"apiversions"`
+	FeePercentage float64 `json:"feepercentage"`
+	Closed        bool    `json:"closed"`
+	Voting        int64   `json:"voting"`
+	Voted         int64   `json:"voted"`
+	Revoked       int64   `json:"revoked"`
+}
+type vspSet map[string]Vsp
+
 // Stakepool represents a decred stakepool solely for voting delegation.
 type Stakepool struct {
 	// APIEnabled defines if the api is enabled.
@@ -140,6 +159,7 @@ type Service struct {
 	Cache sync.Map
 	// the stakepools
 	Stakepools StakepoolSet
+	Vsps       vspSet
 	// the pool update mutex
 	Mutex sync.RWMutex
 }
@@ -156,6 +176,21 @@ func NewService() *Service {
 		Router: http.NewServeMux(),
 		Cache:  sync.Map{},
 		Mutex:  sync.RWMutex{},
+
+		Vsps: vspSet{
+			"teststakepool.decred.org": Vsp{
+				Network:  "testnet",
+				Launched: getUnixTime(2020, 6, 1),
+			},
+			"vspd.realprivacy.cc": Vsp{
+				Network:  "testnet",
+				Launched: getUnixTime(2020, 7, 30),
+			},
+			"test.stakey.net/incognito": Vsp{
+				Network:  "testnet",
+				Launched: getUnixTime(2020, 7, 31),
+			},
+		},
 
 		// Historical launch dates have been collected from these sources:
 		//   - https://github.com/decred/dcrwebapi/commit/09113670a5b411c9c0c988e5a8ea627ee00ac007
@@ -217,12 +252,6 @@ func NewService() *Service {
 				Network:              "mainnet",
 				URL:                  "https://dcr.ubiqsmart.com",
 				Launched:             getUnixTime(2016, 6, 12),
-			},
-			"Kilo": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "testnet",
-				URL:                  "https://teststakepool.decred.org",
-				Launched:             getUnixTime(2017, 2, 7),
 			},
 			"Lima": {
 				APIVersionsSupported: []interface{}{},
@@ -320,11 +349,15 @@ func NewService() *Service {
 	// fetch initial stakepool data
 	stakepoolData(&service)
 
+	// Fetch initial VSP data.
+	vspData(&service)
+
 	// start stakepool update ticker
 	stakepoolTicker := time.NewTicker(time.Minute * 5)
 	go func() {
 		for range stakepoolTicker.C {
 			stakepoolData(&service)
+			vspData(&service)
 		}
 	}()
 
@@ -550,6 +583,75 @@ func stakepoolStats(service *Service, key string, apiVersion int) error {
 	return nil
 }
 
+func vspStats(service *Service, url string) error {
+	var vsp Vsp
+
+	service.Mutex.RLock()
+	vsp = service.Vsps[url]
+	service.Mutex.RUnlock()
+	infoURL := fmt.Sprintf("https://%s/api/v3/vspinfo", url)
+
+	infoResp, err := service.getHTTP(infoURL)
+	if err != nil {
+		return err
+	}
+
+	var info map[string]interface{}
+	err = json.Unmarshal(infoResp, &info)
+	if err != nil {
+		return fmt.Errorf("%v: unmarshal failed: %v",
+			infoURL, err)
+	}
+
+	apiversions, hasAPIVersions := info["apiversions"]
+	feepercentage, hasFeePercentage := info["feepercentage"]
+	vspclosed, hasClosed := info["vspclosed"]
+	voting, hasVoting := info["voting"]
+	voted, hasVoted := info["voted"]
+	revoked, hasRevoked := info["revoked"]
+
+	hasRequiredFields := hasAPIVersions && hasFeePercentage &&
+		hasClosed && hasVoting && hasVoted && hasRevoked
+
+	if !hasRequiredFields {
+		return fmt.Errorf("%v: missing required fields: %+v", infoURL, info)
+	}
+
+	vsp.APIVersions = make([]int64, 0)
+	for _, i := range apiversions.([]interface{}) {
+		vsp.APIVersions = append(vsp.APIVersions, int64(i.(float64)))
+	}
+
+	vsp.FeePercentage = feepercentage.(float64)
+	vsp.Closed = vspclosed.(bool)
+	vsp.Voting = int64(voting.(float64))
+	vsp.Voted = int64(voted.(float64))
+	vsp.Revoked = int64(revoked.(float64))
+
+	vsp.LastUpdated = time.Now().Unix()
+
+	service.Mutex.Lock()
+	service.Vsps[url] = vsp
+	service.Mutex.Unlock()
+
+	return nil
+}
+
+func vspData(service *Service) {
+	var waitGroup sync.WaitGroup
+	for url := range service.Vsps {
+		go func(url string) {
+			waitGroup.Add(1)
+			defer waitGroup.Done()
+			err := vspStats(service, url)
+			if err != nil {
+				log.Println(err)
+			}
+		}(url)
+	}
+	waitGroup.Wait()
+}
+
 // stakepoolData fetches statistics for all listed DCR stakepools
 func stakepoolData(service *Service) {
 	var waitGroup sync.WaitGroup
@@ -628,6 +730,17 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 		}
 
 		respJSON, err := json.Marshal(resp)
+		if err != nil {
+			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			return
+		}
+
+		writeJSONResponse(&writer, http.StatusOK, &respJSON)
+		return
+	case "vsp":
+		service.Mutex.RLock()
+		respJSON, err := json.Marshal(service.Vsps)
+		service.Mutex.RUnlock()
 		if err != nil {
 			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
 			return
