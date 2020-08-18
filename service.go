@@ -186,7 +186,7 @@ func NewService() *Service {
 				Network:  "testnet",
 				Launched: getUnixTime(2020, 7, 30),
 			},
-			"test.stakey.net/incognito": Vsp{
+			"test.stakey.net": Vsp{
 				Network:  "testnet",
 				Launched: getUnixTime(2020, 7, 31),
 			},
