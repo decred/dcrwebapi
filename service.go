@@ -190,6 +190,10 @@ func NewService() *Service {
 				Network:  "testnet",
 				Launched: getUnixTime(2020, 7, 31),
 			},
+			"stakey.net": Vsp{
+				Network:  "mainnet",
+				Launched: getUnixTime(2020, 10, 22),
+			},
 		},
 
 		// Historical launch dates have been collected from these sources:
