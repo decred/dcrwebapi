@@ -348,11 +348,11 @@ func NewService() *Service {
 				Launched:             getUnixTime(2020, 3, 10),
 			},
 			"DcrPool": {
-                                APIVersionsSupported: []interface{}{},
-                                Network:              "mainnet",
-                                URL:                  "https://dcrpool.net",
-                                Launched:             getUnixTime(2020, 9, 10),
-                        },
+				APIVersionsSupported: []interface{}{},
+				Network:              "mainnet",
+				URL:                  "https://dcrpool.net",
+				Launched:             getUnixTime(2020, 9, 10),
+			},
 		},
 	}
 
