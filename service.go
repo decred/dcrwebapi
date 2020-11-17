@@ -198,6 +198,10 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2020, 11, 05),
 			},
+			"vspd.99split.com": Vsp{
+				Network:  "mainnet",
+				Launched: getUnixTime(2020, 11, 17),
+			},
 		},
 
 		// Historical launch dates have been collected from these sources:
