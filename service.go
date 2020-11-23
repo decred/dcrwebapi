@@ -202,6 +202,10 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2020, 11, 17),
 			},
+			"vspd.decredbrasil.com": Vsp{
+				Network:  "mainnet",
+				Launched: getUnixTime(2020, 11, 22),
+			},
 		},
 
 		// Historical launch dates have been collected from these sources:
