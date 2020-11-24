@@ -182,10 +182,6 @@ func NewService() *Service {
 				Network:  "testnet",
 				Launched: getUnixTime(2020, 6, 1),
 			},
-			"vspd.realprivacy.cc": Vsp{
-				Network:  "testnet",
-				Launched: getUnixTime(2020, 7, 30),
-			},
 			"test.stakey.net": Vsp{
 				Network:  "testnet",
 				Launched: getUnixTime(2020, 7, 31),
