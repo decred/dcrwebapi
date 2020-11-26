@@ -194,7 +194,7 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2020, 11, 9),
 			},
-      "vsp.decredcommunity.org": Vsp{
+                        "vsp.decredcommunity.org": Vsp{
 				Network:  "mainnet",
 				Launched: getUnixTime(2020, 11, 05),
 			},
