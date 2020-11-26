@@ -182,10 +182,6 @@ func NewService() *Service {
 				Network:  "testnet",
 				Launched: getUnixTime(2020, 6, 1),
 			},
-			"vspd.realprivacy.cc": Vsp{
-				Network:  "testnet",
-				Launched: getUnixTime(2020, 7, 30),
-			},
 			"test.stakey.net": Vsp{
 				Network:  "testnet",
 				Launched: getUnixTime(2020, 7, 31),
@@ -197,6 +193,18 @@ func NewService() *Service {
 			"vsp.stakeminer.com": Vsp{
 				Network:  "mainnet",
 				Launched: getUnixTime(2020, 11, 9),
+			},
+      "vsp.decredcommunity.org": Vsp{
+				Network:  "mainnet",
+				Launched: getUnixTime(2020, 11, 05),
+			},
+			"vspd.99split.com": Vsp{
+				Network:  "mainnet",
+				Launched: getUnixTime(2020, 11, 17),
+			},
+			"vspd.decredbrasil.com": Vsp{
+				Network:  "mainnet",
+				Launched: getUnixTime(2020, 11, 22),
 			},
 		},
 
@@ -320,12 +328,6 @@ func NewService() *Service {
 				Network:              "mainnet",
 				URL:                  "https://dcrstake.coinmine.pl",
 				Launched:             getUnixTime(2018, 10, 22),
-			},
-			"Staked": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://decred.staked.us",
-				Launched:             getUnixTime(2018, 11, 28),
 			},
 			"Tango": {
 				APIVersionsSupported: []interface{}{},
