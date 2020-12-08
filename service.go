@@ -207,7 +207,7 @@ func NewService() *Service {
 				Launched: getUnixTime(2020, 11, 22),
 			},
 			"ultravsp.uk": Vsp{
-				Network: "mainnet",
+				Network:  "mainnet",
 				Launched: getUnixTime(2020, 12, 1),
 			},
 		},
