@@ -280,7 +280,7 @@ func NewService() *Service {
 			"Lima": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
-				URL:                  "https://ultrapool.eu",
+				URL:                  "https://legacy.ultravsp.uk",
 				Launched:             getUnixTime(2017, 5, 23),
 			},
 			"Mike": {
