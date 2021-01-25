@@ -218,6 +218,10 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2020, 12, 1),
 			},
+			"vsp.dcr.farm": Vsp{
+				Network:  "mainnet",
+				Launched: getUnixTime(2020, 12, 9),
+			},
 		},
 
 		// Historical launch dates have been collected from these sources:
