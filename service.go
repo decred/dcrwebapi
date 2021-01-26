@@ -237,12 +237,6 @@ func NewService() *Service {
 				URL:                  "https://test-dcrpool.dittrex.com",
 				Launched:             getUnixTime(2019, 2, 17),
 			},
-			"Everstake": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://decred.everstake.one",
-				Launched:             getUnixTime(2019, 7, 23),
-			},
 			"Dittrex": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
@@ -332,12 +326,6 @@ func NewService() *Service {
 				Network:              "mainnet",
 				URL:                  "https://stakey.com",
 				Launched:             getUnixTime(2018, 10, 12),
-			},
-			"Mega": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcrpos.megapool.info",
-				Launched:             getUnixTime(2018, 10, 20),
 			},
 			"Zeta": {
 				APIVersionsSupported: []interface{}{},
