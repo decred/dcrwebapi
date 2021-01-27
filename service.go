@@ -222,10 +222,10 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2020, 12, 9),
 			},
-      "dcrpool.ibitlin.com": Vsp{
-				Network:  "mainnet",
-				Launched: getUnixTime(2021, 1, 13),
-      },
+		      "dcrpool.ibitlin.com": Vsp{
+			      Network:  "mainnet",
+			      Launched: getUnixTime(2021, 1, 13),
+		      },
 		},
 
 		// Historical launch dates have been collected from these sources:
