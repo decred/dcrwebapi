@@ -222,11 +222,15 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2020, 12, 9),
 			},
+			"decredvoting.com": Vsp{
+				Network:  "mainnet",
+				Launched: getUnixTime(2021, 2, 1),
+			},
 			"vsp.coinmine.pl": Vsp{
 				Network:  "mainnet",
 				Launched: getUnixTime(2021, 1, 28),
-			},
-		},
+      },
+    },
 
 		// Historical launch dates have been collected from these sources:
 		//   - https://github.com/decred/dcrwebapi/commit/09113670a5b411c9c0c988e5a8ea627ee00ac007
