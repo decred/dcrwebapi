@@ -234,6 +234,10 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2021, 1, 28),
 			},
+			"vspd.stakey.com": {
+				Network:  "mainnet",
+				Launched: getUnixTime(2021, 2, 13),
+			},
 		},
 
 		// Historical launch dates have been collected from these sources:
@@ -332,12 +336,6 @@ func NewService() *Service {
 				Network:              "mainnet",
 				URL:                  "https://dcrpool.ibitlin.com",
 				Launched:             getUnixTime(2018, 7, 7),
-			},
-			"Scarmani": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://stakey.com",
-				Launched:             getUnixTime(2018, 10, 12),
 			},
 			"Zeta": {
 				APIVersionsSupported: []interface{}{},
