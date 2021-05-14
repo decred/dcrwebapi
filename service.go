@@ -110,6 +110,9 @@ type Stakepool struct {
 
 	// Version is the software version advertised.
 	Version string `json:"Version"`
+
+	// BlockHeight is the height of the latest block processed by the VSP.
+	BlockHeight int `json:"BlockHeight"`
 }
 
 // StakepoolSet represents a collection of stakepools.
@@ -582,6 +585,7 @@ func stakepoolStats(service *Service, key string, apiVersion int) error {
 		poolVersion = poolVersion[0:13]
 	}
 	pool.Version = poolVersion
+	pool.BlockHeight = int(data["BlockHeight"].(float64))
 	pool.Immature = int(data["Immature"].(float64))
 	pool.Live = int(data["Live"].(float64))
 	pool.Voted = int(data["Voted"].(float64))
