@@ -319,12 +319,6 @@ func NewService() *Service {
 				URL:                  "https://test.stakey.net",
 				Launched:             getUnixTime(2018, 1, 22),
 			},
-			"Sierra": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://decredvoting.com",
-				Launched:             getUnixTime(2018, 8, 30),
-			},
 			"Life": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
@@ -336,12 +330,6 @@ func NewService() *Service {
 				Network:              "mainnet",
 				URL:                  "https://dcrstake.coinmine.pl",
 				Launched:             getUnixTime(2018, 10, 22),
-			},
-			"Tango": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "testnet",
-				URL:                  "https://testnet.decredvoting.com",
-				Launched:             getUnixTime(2018, 8, 30),
 			},
 			"99split": {
 				APIVersionsSupported: []interface{}{},
