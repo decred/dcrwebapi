@@ -262,12 +262,6 @@ func NewService() *Service {
 				URL:                  "https://pool.d3c.red",
 				Launched:             getUnixTime(2016, 5, 23),
 			},
-			"Golf": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://stakepool.dcrstats.com",
-				Launched:             getUnixTime(2016, 5, 25),
-			},
 			"Hotel": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
@@ -339,12 +333,6 @@ func NewService() *Service {
 				Network:              "mainnet",
 				URL:                  "https://99split.com",
 				Launched:             getUnixTime(2019, 12, 17),
-			},
-			"Charlie": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://decred.yieldwallet.io",
-				Launched:             getUnixTime(2020, 1, 29),
 			},
 			"Dinner": {
 				APIVersionsSupported: []interface{}{},
