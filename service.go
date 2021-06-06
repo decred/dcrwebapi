@@ -56,6 +56,7 @@ type Vsp struct {
 	Voting        int64   `json:"voting"`
 	Voted         int64   `json:"voted"`
 	Revoked       int64   `json:"revoked"`
+	VspdVersion   string  `json:"vspdversion"`
 }
 type vspSet map[string]Vsp
 
@@ -607,9 +608,10 @@ func vspStats(service *Service, url string) error {
 	voting, hasVoting := info["voting"]
 	voted, hasVoted := info["voted"]
 	revoked, hasRevoked := info["revoked"]
+	version, hasVersion := info["vspdversion"]
 
 	hasRequiredFields := hasAPIVersions && hasFeePercentage &&
-		hasClosed && hasVoting && hasVoted && hasRevoked
+		hasClosed && hasVoting && hasVoted && hasRevoked && hasVersion
 
 	if !hasRequiredFields {
 		return fmt.Errorf("%v: missing required fields: %+v", infoURL, info)
@@ -625,6 +627,7 @@ func vspStats(service *Service, url string) error {
 	vsp.Voting = int64(voting.(float64))
 	vsp.Voted = int64(voted.(float64))
 	vsp.Revoked = int64(revoked.(float64))
+	vsp.VspdVersion = version.(string)
 
 	vsp.LastUpdated = time.Now().Unix()
 
@@ -637,9 +640,9 @@ func vspStats(service *Service, url string) error {
 
 func vspData(service *Service) {
 	var waitGroup sync.WaitGroup
+	waitGroup.Add(len(service.Vsps))
 	for url := range service.Vsps {
 		go func(url string) {
-			waitGroup.Add(1)
 			defer waitGroup.Done()
 			err := vspStats(service, url)
 			if err != nil {
