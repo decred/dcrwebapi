@@ -286,18 +286,6 @@ func NewService() *Service {
 				URL:                  "https://legacy.ultravsp.uk",
 				Launched:             getUnixTime(2017, 5, 23),
 			},
-			"Mike": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcr.farm",
-				Launched:             getUnixTime(2017, 12, 21),
-			},
-			"Papa": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://stakey.net",
-				Launched:             getUnixTime(2018, 1, 22),
-			},
 			"Quebec": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "testnet",
@@ -322,23 +310,11 @@ func NewService() *Service {
 				URL:                  "https://dcrstake.coinmine.pl",
 				Launched:             getUnixTime(2018, 10, 22),
 			},
-			"Tango": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "testnet",
-				URL:                  "https://testnet.decredvoting.com",
-				Launched:             getUnixTime(2018, 8, 30),
-			},
 			"99split": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
 				URL:                  "https://99split.com",
 				Launched:             getUnixTime(2019, 12, 17),
-			},
-			"Dinner": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "testnet",
-				URL:                  "https://dcrstakedinner.com",
-				Launched:             getUnixTime(2020, 3, 10),
 			},
 		},
 	}
