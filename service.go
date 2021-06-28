@@ -194,6 +194,10 @@ func NewService() *Service {
 				Network:  "testnet",
 				Launched: getUnixTime(2021, 1, 20),
 			},
+			"vspd-testnet.synergy-crypto.net": {
+				Network:  "testnet",
+				Launched: getUnixTime(2021, 5, 1),
+			},
 			"dcrvsp.ubiqsmart.com": Vsp{
 				Network:  "mainnet",
 				Launched: getUnixTime(2020, 12, 25),
@@ -245,6 +249,10 @@ func NewService() *Service {
 			"123.dcr.rocks": {
 				Network:  "mainnet",
 				Launched: getUnixTime(2021, 4, 28),
+			},
+			"vspd.synergy-crypto.net": {
+				Network:  "mainnet",
+				Launched: getUnixTime(2021, 6, 10),
 			},
 		},
 
