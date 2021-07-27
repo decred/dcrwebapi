@@ -257,12 +257,6 @@ func NewService() *Service {
 				URL:                  "https://dcr.stakeminer.com",
 				Launched:             getUnixTime(2016, 5, 19),
 			},
-			"Echo": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://pool.d3c.red",
-				Launched:             getUnixTime(2016, 5, 23),
-			},
 			"Hotel": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
