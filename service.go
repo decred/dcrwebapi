@@ -182,6 +182,10 @@ func NewService() *Service {
 		Mutex:  sync.RWMutex{},
 
 		Vsps: vspSet{
+			"dcrvsp.dittrex.com": Vsp{
+				Network:  "mainnet",
+				Launched: getUnixTime(2021, 4, 7),
+			},
 			"teststakepool.decred.org": Vsp{
 				Network:  "testnet",
 				Launched: getUnixTime(2020, 6, 1),
