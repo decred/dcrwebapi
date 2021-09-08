@@ -299,12 +299,6 @@ func NewService() *Service {
 				URL:                  "https://test.stakey.net",
 				Launched:             getUnixTime(2018, 1, 22),
 			},
-			"Sierra": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://decredvoting.com",
-				Launched:             getUnixTime(2018, 8, 30),
-			},
 			"Life": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
