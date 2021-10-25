@@ -9,7 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -356,7 +356,7 @@ func (service *Service) getHTTP(url string) ([]byte, error) {
 			url, poolResp.StatusCode)
 	}
 
-	respBody, err := ioutil.ReadAll(poolResp.Body)
+	respBody, err := io.ReadAll(poolResp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%v: failed to read body: %v",
 			url, err)
