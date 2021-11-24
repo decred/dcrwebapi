@@ -305,12 +305,6 @@ func NewService() *Service {
 				URL:                  "https://dcrstake.coinmine.pl",
 				Launched:             getUnixTime(2018, 10, 22),
 			},
-			"99split": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://99split.com",
-				Launched:             getUnixTime(2019, 12, 17),
-			},
 		},
 	}
 
