@@ -1,41 +1,13 @@
-// Copyright (c) 2017-2022 The Decred developers
+// Copyright (c) 2017-2023 The Decred developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/http"
-	"strings"
 )
-
-const (
-	// semanticBuildAlphabet defines the allowed characters for the build
-	// portion of a semantic version string.
-	semanticBuildAlphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-.+"
-)
-
-// normalizeSemString returns the passed string stripped of all characters
-// which are not valid according to the provided semantic versioning alphabet.
-func normalizeSemString(str, alphabet string) string {
-	var result bytes.Buffer
-	for _, r := range str {
-		if strings.ContainsRune(alphabet, r) {
-			result.WriteRune(r)
-		}
-	}
-	return result.String()
-}
-
-// NormalizeBuildString returns the passed string stripped of all characters
-// which are not valid according to the semantic versioning guidelines for build
-// metadata strings.  In particular they MUST only contain characters in
-// semanticBuildAlphabet.
-func NormalizeBuildString(str string) string {
-	return normalizeSemString(str, semanticBuildAlphabet)
-}
 
 // writeJSONResponse convenience func for writing json responses
 func writeJSONResponse(writer *http.ResponseWriter, code int,

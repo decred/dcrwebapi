@@ -30,33 +30,3 @@ Example: <https://api.decred.org/?c=vsp>
     },
 }
 ```
-
-## Get VSP Info (legacy)
-
-Collects data from a hard-coded list of Voting Service Providers running
-[decred/dcrstakepool](https://github.com/decred/dcrstakepool).
-
-Example: <https://api.decred.org/?c=gsd>
-
-```json
-{
-    "Alpha":{
-        "APIEnabled":true,
-        "APIVersionsSupported":[1, 2],
-        "Network":"testnet",
-        "URL":"https://teststakepool.decred.org",
-        "Launched":1516579200,
-        "LastUpdated":1598266266,
-        "Immature":0,
-        "Live":1,
-        "Voted":616,
-        "Missed":10,
-        "PoolFees":1,
-        "ProportionLive":0.00015578750584203146,
-        "ProportionMissed":0.01597444089456869,
-        "UserCount":7,
-        "UserCountActive":5,
-        "Version":"1.5.0-pre"
-    },
-}
-```
