@@ -638,24 +638,6 @@ func getUnixTime(year int, month time.Month, day int) int64 {
 	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC).Unix()
 }
 
-// GetCoinSupply is the handler func for the `/gsc` route.
-// It returns statistics on the DCR blockchain and the available coin supply
-func (service *Service) GetCoinSupply(writer http.ResponseWriter, request *http.Request) {
-	resp, err := coinSupply(service)
-	if err != nil {
-		writeJSONErrorResponse(&writer, err)
-		return
-	}
-
-	respJSON, err := json.Marshal(resp)
-	if err != nil {
-		writeJSONErrorResponse(&writer, err)
-		return
-	}
-
-	writeJSONResponse(&writer, http.StatusOK, &respJSON)
-}
-
 // HandleRoutes is the handler func for all endpoints exposed by the service
 func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.Request) {
 	err := request.ParseForm()
