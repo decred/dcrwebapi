@@ -303,10 +303,10 @@ func NewService() *Service {
 	// Fetch initial VSP data.
 	vspData(&service)
 
-	// start stakepool update ticker
-	stakepoolTicker := time.NewTicker(time.Minute * 5)
+	// Start update ticker.
 	go func() {
-		for range stakepoolTicker.C {
+		for {
+			<-time.After(time.Minute * 5)
 			stakepoolData(&service)
 			vspData(&service)
 		}
