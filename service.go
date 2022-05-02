@@ -254,6 +254,10 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2021, 6, 10),
 			},
+			"big.decred.energy": {
+				Network:  "mainnet",
+				Launched: getUnixTime(2022, 5, 1),
+			},
 		},
 
 		// Historical launch dates have been collected from these sources:
