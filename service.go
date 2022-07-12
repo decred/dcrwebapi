@@ -261,6 +261,10 @@ func NewService() *Service {
 			"dcrhive.com": {
 				Network:  "mainnet",
 				Launched: getUnixTime(2022, 6, 23),
+      },
+			"vspd.bass.cf": {
+				Network:  "mainnet",
+				Launched: getUnixTime(2022, 5, 1),
 			},
 		},
 
