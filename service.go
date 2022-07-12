@@ -258,6 +258,10 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2022, 5, 1),
 			},
+			"vspd.bass.cf": {
+				Network:  "mainnet",
+				Launched: getUnixTime(2022, 5, 1),
+			},
 		},
 
 		// Historical launch dates have been collected from these sources:
