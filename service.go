@@ -287,30 +287,6 @@ func NewService() *Service {
 				URL:                  "https://stake.decredbrasil.com",
 				Launched:             getUnixTime(2016, 5, 28),
 			},
-			"Juliett": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcr.ubiqsmart.com",
-				Launched:             getUnixTime(2016, 6, 12),
-			},
-			"Lima": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://legacy.ultravsp.uk",
-				Launched:             getUnixTime(2017, 5, 23),
-			},
-			"Quebec": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "testnet",
-				URL:                  "https://test.stakey.net",
-				Launched:             getUnixTime(2018, 1, 22),
-			},
-			"Life": {
-				APIVersionsSupported: []interface{}{},
-				Network:              "mainnet",
-				URL:                  "https://dcrpool.ibitlin.com",
-				Launched:             getUnixTime(2018, 7, 7),
-			},
 			"Zeta": {
 				APIVersionsSupported: []interface{}{},
 				Network:              "mainnet",
