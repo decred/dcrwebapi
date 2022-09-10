@@ -58,7 +58,7 @@ type Vsp struct {
 	Revoked           int64   `json:"revoked"`
 	VspdVersion       string  `json:"vspdversion"`
 	BlockHeight       uint64  `json:"blockheight"`
-	NetworkProportion uint32  `json:""`
+	NetworkProportion uint32  `json:"networkproportion"`
 }
 type vspSet map[string]Vsp
 
