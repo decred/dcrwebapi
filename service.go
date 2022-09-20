@@ -67,8 +67,7 @@ type Stakepool struct {
 	// APIEnabled defines if the api is enabled.
 	APIEnabled bool `json:"APIEnabled"`
 
-	// APIVersionsSupported contains the collection of collections of API
-	// versions supported.
+	// APIVersionsSupported contains the collection of API versions supported.
 	APIVersionsSupported []interface{} `json:"APIVersionsSupported"`
 
 	// Network defines the active network.
