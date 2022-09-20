@@ -13,7 +13,7 @@ import (
 
 const (
 	// the listening port
-	defaultPort = ":8089"
+	defaultPort = ":8080"
 )
 
 func main() {
