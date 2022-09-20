@@ -50,15 +50,15 @@ type Vsp struct {
 	// Set by dcrwebapi each time info is successfully updated.
 	LastUpdated int64 `json:"lastupdated"`
 	// Retrieved from the /api/vspinfo.
-	APIVersions       []int64 `json:"apiversions"`
-	FeePercentage     float64 `json:"feepercentage"`
-	Closed            bool    `json:"closed"`
-	Voting            int64   `json:"voting"`
-	Voted             int64   `json:"voted"`
-	Revoked           int64   `json:"revoked"`
-	VspdVersion       string  `json:"vspdversion"`
-	BlockHeight       uint64  `json:"blockheight"`
-	NetworkProportion uint32  `json:"networkproportion"`
+	APIVersions                []int64 `json:"apiversions"`
+	FeePercentage              float64 `json:"feepercentage"`
+	Closed                     bool    `json:"closed"`
+	Voting                     int64   `json:"voting"`
+	Voted                      int64   `json:"voted"`
+	Revoked                    int64   `json:"revoked"`
+	VspdVersion                string  `json:"vspdversion"`
+	BlockHeight                uint64  `json:"blockheight"`
+	EstimatedNetworkProportion float64 `json:"estimatednetworkproportion"`
 }
 type vspSet map[string]Vsp
 
@@ -67,7 +67,7 @@ type Stakepool struct {
 	// APIEnabled defines if the api is enabled.
 	APIEnabled bool `json:"APIEnabled"`
 
-	// APIVersionsSupported contains the collection of collection of API
+	// APIVersionsSupported contains the collection of collections of API
 	// versions supported.
 	APIVersionsSupported []interface{} `json:"APIVersionsSupported"`
 
@@ -564,10 +564,11 @@ func vspStats(service *Service, url string) error {
 	revoked, hasRevoked := info["revoked"]
 	version, hasVersion := info["vspdversion"]
 	blockheight, hasBlockHeight := info["blockheight"]
-	networkproportion, hasNetworkProportion := info["networkproportion"]
+	networkproportion, hasnetworkproportion := info["estimatednetworkproportion"]
 
 	hasRequiredFields := hasAPIVersions && hasFeePercentage &&
-		hasClosed && hasVoting && hasVoted && hasRevoked && hasVersion
+		hasClosed && hasVoting && hasVoted && hasRevoked && hasVersion &&
+		hasBlockHeight && hasnetworkproportion
 
 	if !hasRequiredFields {
 		return fmt.Errorf("%v: missing required fields: %+v", infoURL, info)
@@ -584,12 +585,8 @@ func vspStats(service *Service, url string) error {
 	vsp.Voted = int64(voted.(float64))
 	vsp.Revoked = int64(revoked.(float64))
 	vsp.VspdVersion = version.(string)
-	if hasBlockHeight {
-		vsp.BlockHeight = uint64(blockheight.(float64))
-	}
-	if hasNetworkProportion {
-		vsp.NetworkProportion = uint32(networkproportion.(float64))
-	}
+	vsp.BlockHeight = uint64(blockheight.(float64))
+	vsp.EstimatedNetworkProportion = networkproportion.(float64)
 
 	vsp.LastUpdated = time.Now().Unix()
 
