@@ -643,13 +643,13 @@ func getUnixTime(year int, month time.Month, day int) int64 {
 func (service *Service) GetCoinSupply(writer http.ResponseWriter, request *http.Request) {
 	resp, err := coinSupply(service)
 	if err != nil {
-		writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+		writeJSONErrorResponse(&writer, err)
 		return
 	}
 
 	respJSON, err := json.Marshal(resp)
 	if err != nil {
-		writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+		writeJSONErrorResponse(&writer, err)
 		return
 	}
 
@@ -660,7 +660,7 @@ func (service *Service) GetCoinSupply(writer http.ResponseWriter, request *http.
 func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.Request) {
 	err := request.ParseForm()
 	if err != nil {
-		writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+		writeJSONErrorResponse(&writer, err)
 		return
 	}
 
@@ -669,13 +669,13 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 	case "dc":
 		resp, err := downloadCount(service)
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 			return
 		}
 
 		respJSON, err := json.Marshal(resp)
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 			return
 		}
 
@@ -684,13 +684,13 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 	case "gcs":
 		resp, err := coinSupply(service)
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 			return
 		}
 
 		respJSON, err := json.Marshal(resp)
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 			return
 		}
 
@@ -701,7 +701,7 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 		respJSON, err := json.Marshal(service.Vsps)
 		service.Mutex.RUnlock()
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 			return
 		}
 
@@ -712,7 +712,7 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 		respJSON, err := json.Marshal(service.Stakepools)
 		service.Mutex.RUnlock()
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 			return
 		}
 
@@ -721,7 +721,7 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 	case "cc":
 		addr, _, err := net.SplitHostPort(request.RemoteAddr)
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 		}
 
 		if addr == "::1" || addr == "127.0.0.1" {

@@ -50,14 +50,14 @@ func writeJSONResponse(writer *http.ResponseWriter, code int,
 }
 
 // writeJSONErrorResponse convenience func for writing json error responses
-func writeJSONErrorResponse(writer *http.ResponseWriter, code int, err error) {
+func writeJSONErrorResponse(writer *http.ResponseWriter, err error) {
 	errorBody := map[string]interface{}{}
 	errorBody["error"] = err.Error()
 	errorJSON, _ := json.Marshal(errorBody)
 	(*writer).Header().Set("Content-Type", "application/json")
 	(*writer).Header().Set("Strict-Transport-Security", "max-age=15552001")
 	(*writer).Header().Set("Vary", "Accept-Encoding")
-	(*writer).WriteHeader(code)
+	(*writer).WriteHeader(http.StatusInternalServerError)
 	(*writer).Write(errorJSON)
 }
 
