@@ -22,4 +22,4 @@ jobs:
       - name: Build
         run: go build ./...
       - name: Test
-        run: golangci-lint run --disable-all --deadline=10m --enable=gofmt --enable=revive --enable=vet --enable=gosimple --enable=unconvert
+        run: ./lint.sh
