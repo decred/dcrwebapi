@@ -4,6 +4,7 @@ dcrwebapi
 .DS_Store
 vendor/ 
 .vscode/
+.idea/
 
 # Testing, profiling, and benchmarking artifacts
 cov.out
