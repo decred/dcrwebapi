@@ -303,10 +303,10 @@ func NewService() *Service {
 	// Fetch initial VSP data.
 	vspData(&service)
 
-	// start stakepool update ticker
-	stakepoolTicker := time.NewTicker(time.Minute * 5)
+	// Start update ticker.
 	go func() {
-		for range stakepoolTicker.C {
+		for {
+			<-time.After(time.Minute * 5)
 			stakepoolData(&service)
 			vspData(&service)
 		}
@@ -638,29 +638,11 @@ func getUnixTime(year int, month time.Month, day int) int64 {
 	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC).Unix()
 }
 
-// GetCoinSupply is the handler func for the `/gsc` route.
-// It returns statistics on the DCR blockchain and the available coin supply
-func (service *Service) GetCoinSupply(writer http.ResponseWriter, request *http.Request) {
-	resp, err := coinSupply(service)
-	if err != nil {
-		writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
-		return
-	}
-
-	respJSON, err := json.Marshal(resp)
-	if err != nil {
-		writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
-		return
-	}
-
-	writeJSONResponse(&writer, http.StatusOK, &respJSON)
-}
-
 // HandleRoutes is the handler func for all endpoints exposed by the service
 func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.Request) {
 	err := request.ParseForm()
 	if err != nil {
-		writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+		writeJSONErrorResponse(&writer, err)
 		return
 	}
 
@@ -669,13 +651,13 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 	case "dc":
 		resp, err := downloadCount(service)
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 			return
 		}
 
 		respJSON, err := json.Marshal(resp)
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 			return
 		}
 
@@ -684,13 +666,13 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 	case "gcs":
 		resp, err := coinSupply(service)
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 			return
 		}
 
 		respJSON, err := json.Marshal(resp)
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 			return
 		}
 
@@ -701,7 +683,7 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 		respJSON, err := json.Marshal(service.Vsps)
 		service.Mutex.RUnlock()
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 			return
 		}
 
@@ -712,7 +694,7 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 		respJSON, err := json.Marshal(service.Stakepools)
 		service.Mutex.RUnlock()
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 			return
 		}
 
@@ -721,7 +703,7 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 	case "cc":
 		addr, _, err := net.SplitHostPort(request.RemoteAddr)
 		if err != nil {
-			writeJSONErrorResponse(&writer, http.StatusInternalServerError, err)
+			writeJSONErrorResponse(&writer, err)
 		}
 
 		if addr == "::1" || addr == "127.0.0.1" {
