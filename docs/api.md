@@ -8,40 +8,6 @@ For example, to request the `vsp` call:
 https://api.decred.org/?c=vsp
 ```
 
-## Download Count
-
-Uses GitHub API to retrieve download count from
-[decred/decred-binaries](https://github.com/decred/decred-binaries) and
-[decred/decred-release](https://github.com/decred/decred-release), sums
-them together, and rounds the result down to the nearest 1,000.
-
-Example: <https://api.decred.org/?c=dc>
-
-```json
-["DownloadsCount","609k"]
-```
-
-## Coin Supply
-
-Uses [dcrdata API](https://dcrdata.decred.org/api/supply) to retrieve total
-number of Decred mined so far.
-
-Example: https://api.decred.org/?c=gcs
-
-```json
-{
-    "Airdrop":7,
-    "CoinSupplyMined":11915785,
-    "CoinSupplyMinedRaw":1191578535131039,
-    "CoinSupplyTotal":21000000,
-    "PercentMined":56.7,
-    "Pos":25.8,
-    "Pow":51.5,
-    "Premine":7,
-    "Subsidy":8.6
-}
-```
-
 ## Get VSP Info
 
 Collects data from a hard-coded list of Voting Service Providers running
@@ -93,14 +59,4 @@ Example: <https://api.decred.org/?c=gsd>
         "Version":"1.5.0-pre"
     },
 }
-```
-
-## Clear Cache
-
-Clear cached data. Can only be called from localhost (`::1` or `127.0.0.1`).
-
-Example: <https://api.decred.org/?c=cc>
-
-```json
-{"response": "cache cleared"}
 ```
