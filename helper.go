@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 The Decred developers
+// Copyright (c) 2017-2022 The Decred developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -7,7 +7,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"math"
 	"net/http"
 	"strings"
 )
@@ -59,10 +58,4 @@ func writeJSONErrorResponse(writer *http.ResponseWriter, err error) {
 	(*writer).Header().Set("Vary", "Accept-Encoding")
 	(*writer).WriteHeader(http.StatusInternalServerError)
 	(*writer).Write(errorJSON)
-}
-
-// round rounding func
-func round(f float64, places uint) float64 {
-	shift := math.Pow(10, float64(places))
-	return math.Floor(f*shift+.5) / shift
 }

@@ -6,17 +6,13 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
-	"net"
 	"net/http"
 	"sync"
 	"time"
-
-	"github.com/google/go-github/v39/github"
 )
 
 const (
@@ -26,19 +22,6 @@ const (
 	// StakepoolAPICurrentVersion is the current stakepool API version.
 	StakepoolAPICurrentVersion = 2
 )
-
-// CoinSupply represents the data structure returned by the gcs request.
-type CoinSupply struct {
-	Airdrop            float64 `json:"Airdrop"`
-	CoinSupplyMined    float64 `json:"CoinSupplyMined"`
-	CoinSupplyMinedRaw float64 `json:"CoinSupplyMinedRaw"`
-	CoinSupplyTotal    float64 `json:"CoinSupplyTotal"`
-	PercentMined       float64 `json:"PercentMined"`
-	PoS                float64 `json:"Pos"`
-	PoW                float64 `json:"Pow"`
-	Premine            float64 `json:"Premine"`
-	Subsidy            float64 `json:"Subsidy"`
-}
 
 // Vsp contains information about a single Voting Service Provider. Includes
 // info hard-coded in dcrwebapi and info retrieved from the VSPs /vspinfo
@@ -145,23 +128,12 @@ func (set StakepoolSet) MarshalJSON() ([]byte, error) {
 	return buffer.Bytes(), nil
 }
 
-// CacheEntry represents a cache entry with a specified expiry.
-type CacheEntry struct {
-	// Item defines the cached item.
-	Item interface{}
-
-	// Expire contains the item's expiry.
-	Expiry time.Time
-}
-
 // Service represents a dcrweb service.
 type Service struct {
 	// the http client
 	HTTPClient *http.Client
 	// the http router
 	Router *http.ServeMux
-	// the service cache
-	Cache sync.Map
 	// the stakepools
 	Stakepools StakepoolSet
 	Vsps       vspSet
@@ -179,7 +151,6 @@ func NewService() *Service {
 			Timeout: time.Second * 10,
 		},
 		Router: http.NewServeMux(),
-		Cache:  sync.Map{},
 		Mutex:  sync.RWMutex{},
 
 		Vsps: vspSet{
@@ -346,121 +317,6 @@ func (service *Service) getHTTP(url string) ([]byte, error) {
 	}
 
 	return respBody, nil
-}
-
-// downloadCount calculates the cummulative download count for DCR binaries and releases
-func downloadCount(service *Service) ([]string, error) {
-	now := time.Now()
-	entry, hasDc := service.Cache.Load("dc")
-	if hasDc {
-		// return cached response if not invalidated
-		entry, ok := entry.(CacheEntry)
-		if !ok {
-			return nil, fmt.Errorf("bad item in dc cache")
-		}
-
-		if now.Before(entry.Expiry) {
-			resp, ok := entry.Item.([]string)
-			if !ok {
-				return nil, fmt.Errorf("bad item")
-			}
-			return resp, nil
-		}
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-
-	client := github.NewClient(nil)
-	binaries, _, err := client.Repositories.ListReleases(ctx,
-		"decred", "decred-binaries", nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var countB int
-	for _, binary := range binaries {
-		for _, asset := range binary.Assets {
-			countB += asset.GetDownloadCount()
-		}
-	}
-
-	releases, _, err := client.Repositories.ListReleases(ctx,
-		"decred", "decred-release", nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var countR int
-	for _, release := range releases {
-		for _, asset := range release.Assets {
-			countR += asset.GetDownloadCount()
-		}
-	}
-
-	count := countB + countR
-	countStr := fmt.Sprintf("%dk", count/1000)
-	resp := []string{"DownloadsCount", countStr}
-	// cache response
-	cacheEntry := CacheEntry{
-		Item:   resp,
-		Expiry: now.Add(4 * time.Hour),
-	}
-	service.Cache.Store("dc", cacheEntry)
-
-	return resp, nil
-}
-
-// coinSupply returns the DCR coin supply on mainnet
-func coinSupply(service *Service) (*CoinSupply, error) {
-	now := time.Now()
-	entry, hasGSC := service.Cache.Load("gsc")
-	if hasGSC {
-		// return cached response if not invalidated
-		entry := entry.(CacheEntry)
-		if now.Before(entry.Expiry) {
-			resp := entry.Item.(*CoinSupply)
-			return resp, nil
-		}
-	}
-
-	supplyBody, err := service.getHTTP("https://dcrdata.decred.org/api/supply")
-	if err != nil {
-		return nil, err
-	}
-
-	var supply map[string]interface{}
-	err = json.Unmarshal(supplyBody, &supply)
-	if err != nil {
-		return nil, err
-	}
-
-	currentCoinSupply := round(supply["supply_mined"].(float64), 1)
-	airdrop := 840000.0
-	premine := 840000.0
-	coinSupplyAvailable := round(currentCoinSupply/100000000, 0)
-	coinSupplyAfterGenesisBlock := coinSupplyAvailable - airdrop - premine
-	totalCoinSupply := 21000000.0
-	resp := &CoinSupply{
-		PercentMined:       round((coinSupplyAvailable/totalCoinSupply)*100, 1),
-		CoinSupplyMined:    coinSupplyAvailable,
-		CoinSupplyMinedRaw: currentCoinSupply,
-		CoinSupplyTotal:    21000000,
-		Airdrop:            round(airdrop/coinSupplyAvailable*100, 1),
-		Premine:            round(premine/coinSupplyAvailable*100, 1),
-		PoS:                round((coinSupplyAfterGenesisBlock*.3)/coinSupplyAvailable*100, 1),
-		PoW:                round((coinSupplyAfterGenesisBlock*.6)/coinSupplyAvailable*100, 1),
-		Subsidy:            round((coinSupplyAfterGenesisBlock*.1)/coinSupplyAvailable*100, 1),
-	}
-
-	// cache response
-	cacheEntry := CacheEntry{
-		Item:   resp,
-		Expiry: now.Add(1 * time.Minute),
-	}
-	service.Cache.Store("gsc", cacheEntry)
-
-	return resp, nil
 }
 
 // stakepoolStats fetches statistics for a stakepool
@@ -648,36 +504,6 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 
 	route := request.FormValue("c")
 	switch route {
-	case "dc":
-		resp, err := downloadCount(service)
-		if err != nil {
-			writeJSONErrorResponse(&writer, err)
-			return
-		}
-
-		respJSON, err := json.Marshal(resp)
-		if err != nil {
-			writeJSONErrorResponse(&writer, err)
-			return
-		}
-
-		writeJSONResponse(&writer, http.StatusOK, &respJSON)
-		return
-	case "gcs":
-		resp, err := coinSupply(service)
-		if err != nil {
-			writeJSONErrorResponse(&writer, err)
-			return
-		}
-
-		respJSON, err := json.Marshal(resp)
-		if err != nil {
-			writeJSONErrorResponse(&writer, err)
-			return
-		}
-
-		writeJSONResponse(&writer, http.StatusOK, &respJSON)
-		return
 	case "vsp":
 		service.Mutex.RLock()
 		respJSON, err := json.Marshal(service.Vsps)
@@ -699,22 +525,6 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 		}
 
 		writeJSONResponse(&writer, http.StatusOK, &respJSON)
-		return
-	case "cc":
-		addr, _, err := net.SplitHostPort(request.RemoteAddr)
-		if err != nil {
-			writeJSONErrorResponse(&writer, err)
-		}
-
-		if addr == "::1" || addr == "127.0.0.1" {
-			service.Cache = sync.Map{}
-			respJSON := []byte(`{"response": "cache cleared"}`)
-			writeJSONResponse(&writer, http.StatusOK, &respJSON)
-			return
-		}
-
-		respJSON := []byte(`{"response": "unauthorized"}`)
-		writeJSONResponse(&writer, http.StatusBadRequest, &respJSON)
 		return
 	default:
 		writer.WriteHeader(http.StatusNotFound)
