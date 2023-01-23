@@ -210,10 +210,6 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2021, 1, 28),
 			},
-			"vspd.stakey.com": {
-				Network:  "mainnet",
-				Launched: getUnixTime(2021, 2, 13),
-			},
 			"123.dcr.rocks": {
 				Network:  "mainnet",
 				Launched: getUnixTime(2021, 4, 28),
