@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2019 The Decred developers
+// Copyright (c) 2017-2023 The Decred developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -197,10 +197,6 @@ func NewService() *Service {
 			"vsp.dcr.farm": Vsp{
 				Network:  "mainnet",
 				Launched: getUnixTime(2020, 12, 9),
-			},
-			"dcrpool.ibitlin.com": Vsp{
-				Network:  "mainnet",
-				Launched: getUnixTime(2021, 1, 13),
 			},
 			"decredvoting.com": Vsp{
 				Network:  "mainnet",
