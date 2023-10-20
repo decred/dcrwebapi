@@ -120,10 +120,6 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2022, 6, 23),
 			},
-			"vspd.bass.cf": {
-				Network:  "mainnet",
-				Launched: getUnixTime(2022, 5, 1),
-			},
 			"vote.dcr-swiss.ch": {
 				Network:  "mainnet",
 				Launched: getUnixTime(2023, 6, 30),
