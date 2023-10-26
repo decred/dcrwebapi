@@ -30,6 +30,8 @@ type Vsp struct {
 	Voting                     int64   `json:"voting"`
 	Voted                      int64   `json:"voted"`
 	Revoked                    int64   `json:"revoked"`
+	Expired                    int64   `json:"expired"`
+	Missed                     int64   `json:"missed"`
 	VspdVersion                string  `json:"vspdversion"`
 	BlockHeight                uint64  `json:"blockheight"`
 	EstimatedNetworkProportion float64 `json:"estimatednetworkproportion"`
@@ -204,6 +206,8 @@ func vspStats(service *Service, url string) error {
 	voting, hasVoting := info["voting"]
 	voted, hasVoted := info["voted"]
 	revoked, hasRevoked := info["revoked"]
+	expired, hasExpired := info["expired"]
+	missed, hasMissed := info["missed"]
 	version, hasVersion := info["vspdversion"]
 	blockheight, hasBlockHeight := info["blockheight"]
 	networkproportion, hasnetworkproportion := info["estimatednetworkproportion"]
@@ -229,6 +233,18 @@ func vspStats(service *Service, url string) error {
 	vsp.VspdVersion = version.(string)
 	vsp.BlockHeight = uint64(blockheight.(float64))
 	vsp.EstimatedNetworkProportion = networkproportion.(float64)
+
+	// Expired and Missed were introduced in vspd 1.3.0 so they will be absent
+	// from the responses received from older versions. When every VSP is
+	// updated to 1.3.0+ these fields can be treated like every other required
+	// field.
+	if hasExpired {
+		vsp.Expired = int64(expired.(float64))
+	}
+
+	if hasMissed {
+		vsp.Missed = int64(missed.(float64))
+	}
 
 	vsp.LastUpdated = time.Now().Unix()
 
