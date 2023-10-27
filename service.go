@@ -110,10 +110,6 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2021, 1, 28),
 			},
-			"123.dcr.rocks": {
-				Network:  "mainnet",
-				Launched: getUnixTime(2021, 4, 28),
-			},
 			"big.decred.energy": {
 				Network:  "mainnet",
 				Launched: getUnixTime(2022, 5, 1),
