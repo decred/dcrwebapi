@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2023 The Decred developers
+// Copyright (c) 2017-2024 The Decred developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 // writeJSONResponse convenience func for writing json responses
@@ -30,4 +31,8 @@ func writeJSONErrorResponse(writer *http.ResponseWriter, err error) {
 	(*writer).Header().Set("Vary", "Accept-Encoding")
 	(*writer).WriteHeader(http.StatusInternalServerError)
 	(*writer).Write(errorJSON)
+}
+
+func getUnixTime(year int, month time.Month, day int) int64 {
+	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC).Unix()
 }

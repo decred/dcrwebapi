@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2023 The Decred developers
+// Copyright (c) 2017-2024 The Decred developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -12,6 +12,11 @@ import (
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/decred/dcrd/dcrutil/v4"
+	"github.com/decred/dcrdata/exchanges/v3"
+	apitypes "github.com/decred/dcrdata/v6/api/types"
+	"github.com/decred/dcrdata/v6/db/dbtypes"
 )
 
 // Vsp contains information about a single Voting Service Provider. Includes
@@ -38,15 +43,35 @@ type Vsp struct {
 }
 type vspSet map[string]Vsp
 
+type priceInfo struct {
+	BitcoinUSD  float64 `json:"bitcoin_usd"`
+	DecredUSD   float64 `json:"decred_usd"`
+	LastUpdated int64   `json:"lastupdated"`
+}
+
+type webInfo struct {
+	Circulating float64 `json:"circulatingsupply"`
+	Ultimate    float64 `json:"ultimatesupply"`
+	Staked      float64 `json:"stakedsupply"`
+	BlockReward float64 `json:"blockreward"`
+	Treasury    float64 `json:"treasury"`
+	TicketPrice float64 `json:"ticketprice"`
+	Height      uint32  `json:"height"`
+	LastUpdated int64   `json:"lastupdated"`
+}
+
 // Service represents a dcrweb service.
 type Service struct {
 	// the http client
 	HTTPClient *http.Client
 	// the http router
 	Router *http.ServeMux
-	Vsps   vspSet
-	// the pool update mutex
-	Mutex sync.RWMutex
+
+	// Data cached by the service, protected by a mutex.
+	Vsps      vspSet
+	WebInfo   webInfo
+	PriceInfo priceInfo
+	Mutex     sync.RWMutex
 }
 
 // NewService creates a new dcrwebapi service.
@@ -129,14 +154,19 @@ func NewService() *Service {
 		},
 	}
 
-	// Fetch initial VSP data.
-	vspData(&service)
-
 	// Start update ticker.
 	go func() {
 		for {
-			<-time.After(time.Minute * 5)
 			vspData(&service)
+			err := info(&service)
+			if err != nil {
+				log.Printf("Error updating web info: %v", err)
+			}
+			err = price(&service)
+			if err != nil {
+				log.Printf("Error updating price info: %v", err)
+			}
+			<-time.After(time.Minute * 5)
 		}
 	}()
 
@@ -266,8 +296,83 @@ func vspData(service *Service) {
 	waitGroup.Wait()
 }
 
-func getUnixTime(year int, month time.Month, day int) int64 {
-	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC).Unix()
+// dcrdata gets an API response from dcrdata and unmarshals it.
+func (service *Service) dcrdata(path string, response interface{}) error {
+	body, err := service.getHTTP("https://dcrdata.decred.org/api" + path)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(body, response)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func price(service *Service) error {
+	var exchange exchanges.ExchangeRates
+	err := service.dcrdata("/exchangerate", &exchange)
+	if err != nil {
+		return err
+	}
+
+	service.Mutex.Lock()
+	service.PriceInfo = priceInfo{
+		BitcoinUSD:  exchange.BtcPrice,
+		DecredUSD:   exchange.DcrPrice,
+		LastUpdated: time.Now().Unix(),
+	}
+	service.Mutex.Unlock()
+
+	return nil
+}
+
+func info(service *Service) error {
+	var supply apitypes.CoinSupply
+	err := service.dcrdata("/supply", &supply)
+	if err != nil {
+		return err
+	}
+
+	var bestBlock apitypes.BlockDataBasic
+	err = service.dcrdata("/block/best", &bestBlock)
+	if err != nil {
+		return err
+	}
+
+	var treasury dbtypes.TreasuryBalance
+	err = service.dcrdata("/treasury/balance", &treasury)
+	if err != nil {
+		return err
+	}
+
+	var subsidy apitypes.BlockSubsidies
+	err = service.dcrdata("/block/best/subsidy", &subsidy)
+	if err != nil {
+		return err
+	}
+
+	// toDCR converts atoms to DCR.
+	toDCR := func(atoms int64) float64 {
+		return dcrutil.Amount(atoms).ToCoin()
+	}
+
+	service.Mutex.Lock()
+	service.WebInfo = webInfo{
+		Circulating: toDCR(supply.Mined),
+		Ultimate:    toDCR(supply.Ultimate),
+		Staked:      bestBlock.PoolInfo.Value,
+		BlockReward: toDCR(subsidy.Work * 100),
+		Treasury:    toDCR(treasury.Balance),
+		TicketPrice: bestBlock.StakeDiff,
+		Height:      bestBlock.Height,
+		LastUpdated: time.Now().Unix(),
+	}
+	service.Mutex.Unlock()
+
+	return nil
 }
 
 // HandleRoutes is the handler func for all endpoints exposed by the service
@@ -284,6 +389,30 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 	case "vsp":
 		service.Mutex.RLock()
 		respJSON, err := json.Marshal(service.Vsps)
+		service.Mutex.RUnlock()
+		if err != nil {
+			writeJSONErrorResponse(&writer, err)
+			return
+		}
+
+		writeJSONResponse(&writer, http.StatusOK, &respJSON)
+		return
+
+	case "webinfo":
+		service.Mutex.RLock()
+		respJSON, err := json.Marshal(service.WebInfo)
+		service.Mutex.RUnlock()
+		if err != nil {
+			writeJSONErrorResponse(&writer, err)
+			return
+		}
+
+		writeJSONResponse(&writer, http.StatusOK, &respJSON)
+		return
+
+	case "price":
+		service.Mutex.RLock()
+		respJSON, err := json.Marshal(service.PriceInfo)
 		service.Mutex.RUnlock()
 		if err != nil {
 			writeJSONErrorResponse(&writer, err)

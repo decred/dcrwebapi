@@ -32,3 +32,37 @@ Example: <https://api.decred.org/?c=vsp>
     },
 }
 ```
+
+## Web Info
+
+Collects data from dcrdata and caches it, serves to JavaScript running on the
+homepage of <https://decred.org>.
+
+Example: <https://api.decred.org/?c=webinfo>
+
+```json
+{
+    "circulatingsupply": 15804577.17784509,
+    "ultimatesupply": 20999999.9839432,
+    "stakedsupply": 9855286.05084056,
+    "blockreward": 8.061013,
+    "treasury": 822237.44313611,
+    "ticketprice": 268.19271648,
+    "height": 837324,
+    "lastupdated": 1706092430
+}
+```
+
+## Price Info
+
+Returns the current USD price of Bitcoin and Decred as reported by dcrdata.
+
+Example: <https://api.decred.org/?c=price>
+
+```json
+{
+    "bitcoin_usd": 40119.53495,
+    "decred_usd": 14.1665886541639,
+    "lastupdated": 1706092430
+}
+```
