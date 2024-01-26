@@ -3,9 +3,9 @@ module github.com/decred/dcrwebapi
 go 1.18
 
 require (
-	github.com/decred/dcrd/dcrutil/v4 v4.0.0
+	github.com/decred/dcrd/dcrutil/v4 v4.0.1
 	github.com/decred/dcrdata/v6 v6.0.0
-	github.com/gorilla/handlers v1.5.1
+	github.com/gorilla/handlers v1.5.2
 )
 
 require (
