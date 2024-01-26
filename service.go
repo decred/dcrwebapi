@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/decred/dcrd/dcrutil/v4"
-	"github.com/decred/dcrdata/exchanges/v3"
 	apitypes "github.com/decred/dcrdata/v6/api/types"
 	"github.com/decred/dcrdata/v6/db/dbtypes"
 )
@@ -312,7 +311,10 @@ func (service *Service) dcrdata(path string, response interface{}) error {
 }
 
 func price(service *Service) error {
-	var exchange exchanges.ExchangeRates
+	var exchange struct {
+		DcrPrice float64 `json:"dcrPrice"`
+		BtcPrice float64 `json:"btcPrice"`
+	}
 	err := service.dcrdata("/exchangerate", &exchange)
 	if err != nil {
 		return err
