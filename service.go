@@ -130,10 +130,6 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2021, 2, 1),
 			},
-			"decred.stake.fun": Vsp{
-				Network:  "mainnet",
-				Launched: getUnixTime(2021, 1, 28),
-			},
 			"big.decred.energy": {
 				Network:  "mainnet",
 				Launched: getUnixTime(2022, 5, 1),
