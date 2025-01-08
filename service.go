@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2024 The Decred developers
+// Copyright (c) 2017-2025 The Decred developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -33,7 +33,6 @@ type Vsp struct {
 	Closed                     bool    `json:"closed"`
 	Voting                     int64   `json:"voting"`
 	Voted                      int64   `json:"voted"`
-	Revoked                    int64   `json:"revoked"`
 	Expired                    int64   `json:"expired"`
 	Missed                     int64   `json:"missed"`
 	VspdVersion                string  `json:"vspdversion"`
@@ -230,7 +229,6 @@ func vspStats(service *Service, url string) error {
 	vspclosed, hasClosed := info["vspclosed"]
 	voting, hasVoting := info["voting"]
 	voted, hasVoted := info["voted"]
-	revoked, hasRevoked := info["revoked"]
 	expired, hasExpired := info["expired"]
 	missed, hasMissed := info["missed"]
 	version, hasVersion := info["vspdversion"]
@@ -238,8 +236,8 @@ func vspStats(service *Service, url string) error {
 	networkproportion, hasnetworkproportion := info["estimatednetworkproportion"]
 
 	hasRequiredFields := hasAPIVersions && hasFeePercentage &&
-		hasClosed && hasVoting && hasVoted && hasRevoked && hasVersion &&
-		hasBlockHeight && hasnetworkproportion
+		hasClosed && hasVoting && hasVoted && hasExpired && hasMissed &&
+		hasVersion && hasBlockHeight && hasnetworkproportion
 
 	if !hasRequiredFields {
 		return fmt.Errorf("%v: missing required fields: %+v", infoURL, info)
@@ -254,22 +252,11 @@ func vspStats(service *Service, url string) error {
 	vsp.Closed = vspclosed.(bool)
 	vsp.Voting = int64(voting.(float64))
 	vsp.Voted = int64(voted.(float64))
-	vsp.Revoked = int64(revoked.(float64))
+	vsp.Expired = int64(expired.(float64))
+	vsp.Missed = int64(missed.(float64))
 	vsp.VspdVersion = version.(string)
 	vsp.BlockHeight = uint64(blockheight.(float64))
 	vsp.EstimatedNetworkProportion = networkproportion.(float64)
-
-	// Expired and Missed were introduced in vspd 1.3.0 so they will be absent
-	// from the responses received from older versions. When every VSP is
-	// updated to 1.3.0+ these fields can be treated like every other required
-	// field.
-	if hasExpired {
-		vsp.Expired = int64(expired.(float64))
-	}
-
-	if hasMissed {
-		vsp.Missed = int64(missed.(float64))
-	}
 
 	vsp.LastUpdated = time.Now().Unix()
 
