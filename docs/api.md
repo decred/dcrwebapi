@@ -26,7 +26,6 @@ Example: <https://api.decred.org/?c=vsp>
         "closed": false,
         "voting": 3935,
         "voted": 57073,
-        "revoked": 83,
         "expired": 73,
         "missed": 10,
     },
