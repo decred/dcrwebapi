@@ -168,7 +168,7 @@ func NewService() *Service {
 // getHTTP will use the services HTTP client to send a GET request to the
 // provided URL. Returns the response body, or an error.
 func (service *Service) getHTTP(url string) ([]byte, error) {
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%v: failed to create request: %v",
 			url, err)

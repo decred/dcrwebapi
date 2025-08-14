@@ -1,18 +1,15 @@
+version: "2"
 run:
-  deadline: 10m
+  timeout: 10m
 
 linters:
-  disable-all: true
+  default: none
   enable:
     - asciicheck
     - bidichk
     - durationcheck
     - exhaustive
-    - exportloopref
     - goconst
-    - gofmt
-    - goimports
-    - gosimple
     - govet
     - ineffassign
     - misspell
@@ -20,8 +17,16 @@ linters:
     - revive
     - staticcheck
     - tparallel
-    - typecheck
     - unconvert
     - unparam
     - unused
-    - vetshadow
+    - usestdlibvars
+    - usetesting
+  exclusions:
+    presets:
+      - comments
+formatters:
+  enable:
+    - gofmt
+    - goimports
+
