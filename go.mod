@@ -3,7 +3,7 @@ module github.com/decred/dcrwebapi
 go 1.18
 
 require (
-	github.com/decred/dcrd/dcrutil/v4 v4.0.1
+	github.com/decred/dcrd/dcrutil/v4 v4.0.2
 	github.com/decred/dcrdata/v6 v6.0.0
 	github.com/gorilla/handlers v1.5.2
 )
@@ -16,7 +16,7 @@ require (
 	github.com/decred/dcrd/blockchain/stake/v3 v3.0.1 // indirect
 	github.com/decred/dcrd/blockchain/standalone/v2 v2.2.0 // indirect
 	github.com/decred/dcrd/chaincfg/chainhash v1.0.4 // indirect
-	github.com/decred/dcrd/chaincfg/v3 v3.2.0 // indirect
+	github.com/decred/dcrd/chaincfg/v3 v3.2.1 // indirect
 	github.com/decred/dcrd/crypto/blake256 v1.0.1 // indirect
 	github.com/decred/dcrd/crypto/ripemd160 v1.0.2 // indirect
 	github.com/decred/dcrd/database/v2 v2.0.3 // indirect
@@ -28,8 +28,8 @@ require (
 	github.com/decred/dcrd/dcrutil/v3 v3.0.1 // indirect
 	github.com/decred/dcrd/rpc/jsonrpc/types/v2 v2.3.1 // indirect
 	github.com/decred/dcrd/txscript/v3 v3.0.1 // indirect
-	github.com/decred/dcrd/txscript/v4 v4.1.0 // indirect
-	github.com/decred/dcrd/wire v1.6.0 // indirect
+	github.com/decred/dcrd/txscript/v4 v4.1.1 // indirect
+	github.com/decred/dcrd/wire v1.7.0 // indirect
 	github.com/decred/slog v1.2.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
