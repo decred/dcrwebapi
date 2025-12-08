@@ -16,6 +16,7 @@ import (
 	"github.com/decred/dcrd/dcrutil/v4"
 	apitypes "github.com/decred/dcrdata/v6/api/types"
 	"github.com/decred/dcrdata/v6/db/dbtypes"
+	"github.com/decred/vspd/types/v3"
 )
 
 // Vsp contains information about a single Voting Service Provider. Includes
@@ -36,8 +37,8 @@ type Vsp struct {
 	Expired                    int64   `json:"expired"`
 	Missed                     int64   `json:"missed"`
 	VspdVersion                string  `json:"vspdversion"`
-	BlockHeight                uint64  `json:"blockheight"`
-	EstimatedNetworkProportion float64 `json:"estimatednetworkproportion"`
+	BlockHeight                uint32  `json:"blockheight"`
+	EstimatedNetworkProportion float32 `json:"estimatednetworkproportion"`
 }
 type vspSet map[string]Vsp
 
@@ -209,46 +210,23 @@ func vspStats(service *Service, url string) error {
 		return err
 	}
 
-	var info map[string]interface{}
+	var info types.VspInfoResponse
 	err = json.Unmarshal(infoResp, &info)
 	if err != nil {
 		return fmt.Errorf("%v: unmarshal failed: %v",
 			infoURL, err)
 	}
 
-	apiversions, hasAPIVersions := info["apiversions"]
-	feepercentage, hasFeePercentage := info["feepercentage"]
-	vspclosed, hasClosed := info["vspclosed"]
-	voting, hasVoting := info["voting"]
-	voted, hasVoted := info["voted"]
-	expired, hasExpired := info["expired"]
-	missed, hasMissed := info["missed"]
-	version, hasVersion := info["vspdversion"]
-	blockheight, hasBlockHeight := info["blockheight"]
-	networkproportion, hasnetworkproportion := info["estimatednetworkproportion"]
-
-	hasRequiredFields := hasAPIVersions && hasFeePercentage &&
-		hasClosed && hasVoting && hasVoted && hasExpired && hasMissed &&
-		hasVersion && hasBlockHeight && hasnetworkproportion
-
-	if !hasRequiredFields {
-		return fmt.Errorf("%v: missing required fields: %+v", infoURL, info)
-	}
-
-	vsp.APIVersions = make([]int64, 0)
-	for _, i := range apiversions.([]interface{}) {
-		vsp.APIVersions = append(vsp.APIVersions, int64(i.(float64)))
-	}
-
-	vsp.FeePercentage = feepercentage.(float64)
-	vsp.Closed = vspclosed.(bool)
-	vsp.Voting = int64(voting.(float64))
-	vsp.Voted = int64(voted.(float64))
-	vsp.Expired = int64(expired.(float64))
-	vsp.Missed = int64(missed.(float64))
-	vsp.VspdVersion = version.(string)
-	vsp.BlockHeight = uint64(blockheight.(float64))
-	vsp.EstimatedNetworkProportion = networkproportion.(float64)
+	vsp.APIVersions = info.APIVersions
+	vsp.FeePercentage = info.FeePercentage
+	vsp.Closed = info.VspClosed
+	vsp.Voting = info.Voting
+	vsp.Voted = info.Voted
+	vsp.Expired = info.Expired
+	vsp.Missed = info.Missed
+	vsp.VspdVersion = info.VspdVersion
+	vsp.BlockHeight = info.BlockHeight
+	vsp.EstimatedNetworkProportion = info.NetworkProportion
 
 	vsp.LastUpdated = time.Now().Unix()
 
