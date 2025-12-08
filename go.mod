@@ -1,10 +1,11 @@
 module github.com/decred/dcrwebapi
 
-go 1.18
+go 1.23.0
 
 require (
 	github.com/decred/dcrd/dcrutil/v4 v4.0.2
 	github.com/decred/dcrdata/v6 v6.0.0
+	github.com/decred/vspd/types/v3 v3.0.0
 	github.com/gorilla/handlers v1.5.2
 )
 
