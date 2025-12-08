@@ -171,15 +171,13 @@ func NewService() *Service {
 func (service *Service) getHTTP(url string) ([]byte, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%v: failed to create request: %v",
-			url, err)
+		return nil, fmt.Errorf("%v: failed to create request: %w", url, err)
 	}
 
 	req.Header.Set("User-Agent", "decred/dcrweb bot")
 	poolResp, err := service.HTTPClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("%v: failed to send request: %v",
-			url, err)
+		return nil, fmt.Errorf("%v: failed to send request: %w", url, err)
 	}
 	defer poolResp.Body.Close()
 
@@ -190,8 +188,7 @@ func (service *Service) getHTTP(url string) ([]byte, error) {
 
 	respBody, err := io.ReadAll(poolResp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("%v: failed to read body: %v",
-			url, err)
+		return nil, fmt.Errorf("%v: failed to read body: %w", url, err)
 	}
 
 	return respBody, nil
@@ -213,8 +210,7 @@ func vspStats(service *Service, url string) error {
 	var info types.VspInfoResponse
 	err = json.Unmarshal(infoResp, &info)
 	if err != nil {
-		return fmt.Errorf("%v: unmarshal failed: %v",
-			infoURL, err)
+		return fmt.Errorf("%v: unmarshal failed: %w", infoURL, err)
 	}
 
 	vsp.APIVersions = info.APIVersions
