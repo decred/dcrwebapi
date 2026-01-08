@@ -130,6 +130,10 @@ func NewService() *Service {
 				Network:  "mainnet",
 				Launched: getUnixTime(2022, 5, 1),
 			},
+			"dcr.cerebro.host": {
+				Network:  "mainnet",
+				Launched: getUnixTime(2024, 9, 9),
+			},
 			"dcrhive.com": {
 				Network:  "mainnet",
 				Launched: getUnixTime(2022, 6, 23),
