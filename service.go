@@ -332,13 +332,7 @@ func info(service *Service) error {
 
 // HandleRoutes is the handler func for all endpoints exposed by the service
 func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.Request) {
-	err := request.ParseForm()
-	if err != nil {
-		writeJSONErrorResponse(&writer, err)
-		return
-	}
-
-	route := request.FormValue("c")
+	route := request.URL.Query().Get("c")
 	switch route {
 
 	case "vsp":
