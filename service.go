@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2025 The Decred developers
+// Copyright (c) 2017-2026 The Decred developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -190,7 +190,7 @@ func (service *Service) getHTTP(url string) ([]byte, error) {
 			url, poolResp.StatusCode)
 	}
 
-	respBody, err := io.ReadAll(poolResp.Body)
+	respBody, err := io.ReadAll(io.LimitReader(poolResp.Body, 1<<20)) // 1 MiB limit
 	if err != nil {
 		return nil, fmt.Errorf("%v: failed to read body: %w", url, err)
 	}
