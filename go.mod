@@ -3,7 +3,6 @@ module github.com/decred/dcrwebapi
 go 1.23.0
 
 require (
-	github.com/decred/dcrd/dcrutil/v4 v4.0.2
 	github.com/decred/dcrdata/v6 v6.0.0
 	github.com/decred/vspd/types/v3 v3.0.0
 	github.com/gorilla/handlers v1.5.2
@@ -24,12 +23,10 @@ require (
 	github.com/decred/dcrd/dcrec v1.0.1 // indirect
 	github.com/decred/dcrd/dcrec/edwards/v2 v2.0.3 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v3 v3.0.1 // indirect
-	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0 // indirect
 	github.com/decred/dcrd/dcrjson/v3 v3.1.1 // indirect
 	github.com/decred/dcrd/dcrutil/v3 v3.0.1 // indirect
 	github.com/decred/dcrd/rpc/jsonrpc/types/v2 v2.3.1 // indirect
 	github.com/decred/dcrd/txscript/v3 v3.0.1 // indirect
-	github.com/decred/dcrd/txscript/v4 v4.1.1 // indirect
 	github.com/decred/dcrd/wire v1.7.0 // indirect
 	github.com/decred/slog v1.2.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect

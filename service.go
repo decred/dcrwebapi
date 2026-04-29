@@ -9,11 +9,11 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"net/http"
 	"sync"
 	"time"
 
-	"github.com/decred/dcrd/dcrutil/v4"
 	apitypes "github.com/decred/dcrdata/v6/api/types"
 	"github.com/decred/dcrdata/v6/db/dbtypes"
 	"github.com/decred/vspd/types/v3"
@@ -311,7 +311,7 @@ func (s *Service) info() error {
 
 	// toDCR converts atoms to DCR.
 	toDCR := func(atoms int64) float64 {
-		return dcrutil.Amount(atoms).ToCoin()
+		return float64(atoms) / math.Pow10(8)
 	}
 
 	s.Lock()
