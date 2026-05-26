@@ -152,12 +152,12 @@ func NewService() *Service {
 	// Start update ticker.
 	go func() {
 		for {
-			vspData(&service)
-			err := info(&service)
+			service.vspData()
+			err := service.info()
 			if err != nil {
 				log.Printf("Error updating web info: %v", err)
 			}
-			err = price(&service)
+			err = service.price()
 			if err != nil {
 				log.Printf("Error updating price info: %v", err)
 			}
@@ -172,14 +172,14 @@ func NewService() *Service {
 
 // getHTTP will use the services HTTP client to send a GET request to the
 // provided URL. Returns the response body, or an error.
-func (service *Service) getHTTP(url string) ([]byte, error) {
+func (s *Service) getHTTP(url string) ([]byte, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%v: failed to create request: %w", url, err)
 	}
 
 	req.Header.Set("User-Agent", "decred/dcrweb bot")
-	poolResp, err := service.HTTPClient.Do(req)
+	poolResp, err := s.HTTPClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("%v: failed to send request: %w", url, err)
 	}
@@ -198,15 +198,15 @@ func (service *Service) getHTTP(url string) ([]byte, error) {
 	return respBody, nil
 }
 
-func vspStats(service *Service, url string) error {
+func (s *Service) vspStats(url string) error {
 	var vsp Vsp
 
-	service.Mutex.RLock()
-	vsp = service.Vsps[url]
-	service.Mutex.RUnlock()
+	s.Mutex.RLock()
+	vsp = s.Vsps[url]
+	s.Mutex.RUnlock()
 	infoURL := fmt.Sprintf("https://%s/api/v3/vspinfo", url)
 
-	infoResp, err := service.getHTTP(infoURL)
+	infoResp, err := s.getHTTP(infoURL)
 	if err != nil {
 		return err
 	}
@@ -230,31 +230,31 @@ func vspStats(service *Service, url string) error {
 
 	vsp.LastUpdated = time.Now().Unix()
 
-	service.Mutex.Lock()
-	service.Vsps[url] = vsp
-	service.Mutex.Unlock()
+	s.Mutex.Lock()
+	s.Vsps[url] = vsp
+	s.Mutex.Unlock()
 
 	return nil
 }
 
-func vspData(service *Service) {
-	var waitGroup sync.WaitGroup
-	waitGroup.Add(len(service.Vsps))
-	for url := range service.Vsps {
+func (s *Service) vspData() {
+	var wg sync.WaitGroup
+	wg.Add(len(s.Vsps))
+	for url := range s.Vsps {
 		go func(url string) {
-			defer waitGroup.Done()
-			err := vspStats(service, url)
+			defer wg.Done()
+			err := s.vspStats(url)
 			if err != nil {
 				log.Println(err)
 			}
 		}(url)
 	}
-	waitGroup.Wait()
+	wg.Wait()
 }
 
 // dcrdata gets an API response from dcrdata and unmarshals it.
-func (service *Service) dcrdata(path string, response interface{}) error {
-	body, err := service.getHTTP("https://dcrdata.decred.org/api" + path)
+func (s *Service) dcrdata(path string, response interface{}) error {
+	body, err := s.getHTTP("https://dcrdata.decred.org/api" + path)
 	if err != nil {
 		return err
 	}
@@ -267,48 +267,48 @@ func (service *Service) dcrdata(path string, response interface{}) error {
 	return nil
 }
 
-func price(service *Service) error {
+func (s *Service) price() error {
 	var exchange struct {
 		DcrPrice float64 `json:"dcrPrice"`
 		BtcPrice float64 `json:"btcPrice"`
 	}
-	err := service.dcrdata("/exchangerate", &exchange)
+	err := s.dcrdata("/exchangerate", &exchange)
 	if err != nil {
 		return err
 	}
 
-	service.Mutex.Lock()
-	service.PriceInfo = priceInfo{
+	s.Mutex.Lock()
+	s.PriceInfo = priceInfo{
 		BitcoinUSD:  exchange.BtcPrice,
 		DecredUSD:   exchange.DcrPrice,
 		LastUpdated: time.Now().Unix(),
 	}
-	service.Mutex.Unlock()
+	s.Mutex.Unlock()
 
 	return nil
 }
 
-func info(service *Service) error {
+func (s *Service) info() error {
 	var supply apitypes.CoinSupply
-	err := service.dcrdata("/supply", &supply)
+	err := s.dcrdata("/supply", &supply)
 	if err != nil {
 		return err
 	}
 
 	var bestBlock apitypes.BlockDataBasic
-	err = service.dcrdata("/block/best", &bestBlock)
+	err = s.dcrdata("/block/best", &bestBlock)
 	if err != nil {
 		return err
 	}
 
 	var treasury dbtypes.TreasuryBalance
-	err = service.dcrdata("/treasury/balance", &treasury)
+	err = s.dcrdata("/treasury/balance", &treasury)
 	if err != nil {
 		return err
 	}
 
 	var subsidy apitypes.BlockSubsidies
-	err = service.dcrdata("/block/best/subsidy", &subsidy)
+	err = s.dcrdata("/block/best/subsidy", &subsidy)
 	if err != nil {
 		return err
 	}
@@ -318,8 +318,8 @@ func info(service *Service) error {
 		return dcrutil.Amount(atoms).ToCoin()
 	}
 
-	service.Mutex.Lock()
-	service.WebInfo = webInfo{
+	s.Mutex.Lock()
+	s.WebInfo = webInfo{
 		Circulating: toDCR(supply.Mined),
 		Ultimate:    toDCR(supply.Ultimate),
 		Staked:      bestBlock.PoolInfo.Value,
@@ -329,20 +329,20 @@ func info(service *Service) error {
 		Height:      bestBlock.Height,
 		LastUpdated: time.Now().Unix(),
 	}
-	service.Mutex.Unlock()
+	s.Mutex.Unlock()
 
 	return nil
 }
 
 // HandleRoutes is the handler func for all endpoints exposed by the service
-func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.Request) {
+func (s *Service) HandleRoutes(writer http.ResponseWriter, request *http.Request) {
 	route := request.URL.Query().Get("c")
 	switch route {
 
 	case "vsp":
-		service.Mutex.RLock()
-		respJSON, err := json.Marshal(service.Vsps)
-		service.Mutex.RUnlock()
+		s.Mutex.RLock()
+		respJSON, err := json.Marshal(s.Vsps)
+		s.Mutex.RUnlock()
 		if err != nil {
 			writeJSONErrorResponse(&writer, err)
 			return
@@ -352,9 +352,9 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 		return
 
 	case "webinfo":
-		service.Mutex.RLock()
-		respJSON, err := json.Marshal(service.WebInfo)
-		service.Mutex.RUnlock()
+		s.Mutex.RLock()
+		respJSON, err := json.Marshal(s.WebInfo)
+		s.Mutex.RUnlock()
 		if err != nil {
 			writeJSONErrorResponse(&writer, err)
 			return
@@ -364,9 +364,9 @@ func (service *Service) HandleRoutes(writer http.ResponseWriter, request *http.R
 		return
 
 	case "price":
-		service.Mutex.RLock()
-		respJSON, err := json.Marshal(service.PriceInfo)
-		service.Mutex.RUnlock()
+		s.Mutex.RLock()
+		respJSON, err := json.Marshal(s.PriceInfo)
+		s.Mutex.RUnlock()
 		if err != nil {
 			writeJSONErrorResponse(&writer, err)
 			return
