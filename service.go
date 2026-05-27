@@ -67,10 +67,10 @@ type Service struct {
 	Router *http.ServeMux
 
 	// Data cached by the service, protected by a mutex.
+	sync.RWMutex
 	Vsps      vspSet
 	WebInfo   webInfo
 	PriceInfo priceInfo
-	Mutex     sync.RWMutex
 }
 
 // NewService creates a new dcrwebapi service.
@@ -83,7 +83,6 @@ func NewService() *Service {
 			Timeout: time.Second * 10,
 		},
 		Router: http.NewServeMux(),
-		Mutex:  sync.RWMutex{},
 
 		Vsps: vspSet{
 			"teststakepool.decred.org": Vsp{
@@ -198,12 +197,7 @@ func (s *Service) getHTTP(url string) ([]byte, error) {
 	return respBody, nil
 }
 
-func (s *Service) vspStats(url string) error {
-	var vsp Vsp
-
-	s.Mutex.RLock()
-	vsp = s.Vsps[url]
-	s.Mutex.RUnlock()
+func (s *Service) vspStats(url string, vsp Vsp) error {
 	infoURL := fmt.Sprintf("https://%s/api/v3/vspinfo", url)
 
 	infoResp, err := s.getHTTP(infoURL)
@@ -230,25 +224,27 @@ func (s *Service) vspStats(url string) error {
 
 	vsp.LastUpdated = time.Now().Unix()
 
-	s.Mutex.Lock()
+	s.Lock()
 	s.Vsps[url] = vsp
-	s.Mutex.Unlock()
+	s.Unlock()
 
 	return nil
 }
 
 func (s *Service) vspData() {
 	var wg sync.WaitGroup
+	s.RLock()
 	wg.Add(len(s.Vsps))
-	for url := range s.Vsps {
-		go func(url string) {
+	for url, vsp := range s.Vsps {
+		go func(url string, vsp Vsp) {
 			defer wg.Done()
-			err := s.vspStats(url)
+			err := s.vspStats(url, vsp)
 			if err != nil {
 				log.Println(err)
 			}
-		}(url)
+		}(url, vsp)
 	}
+	s.RUnlock()
 	wg.Wait()
 }
 
@@ -277,13 +273,13 @@ func (s *Service) price() error {
 		return err
 	}
 
-	s.Mutex.Lock()
+	s.Lock()
 	s.PriceInfo = priceInfo{
 		BitcoinUSD:  exchange.BtcPrice,
 		DecredUSD:   exchange.DcrPrice,
 		LastUpdated: time.Now().Unix(),
 	}
-	s.Mutex.Unlock()
+	s.Unlock()
 
 	return nil
 }
@@ -318,7 +314,7 @@ func (s *Service) info() error {
 		return dcrutil.Amount(atoms).ToCoin()
 	}
 
-	s.Mutex.Lock()
+	s.Lock()
 	s.WebInfo = webInfo{
 		Circulating: toDCR(supply.Mined),
 		Ultimate:    toDCR(supply.Ultimate),
@@ -329,7 +325,7 @@ func (s *Service) info() error {
 		Height:      bestBlock.Height,
 		LastUpdated: time.Now().Unix(),
 	}
-	s.Mutex.Unlock()
+	s.Unlock()
 
 	return nil
 }
@@ -340,9 +336,9 @@ func (s *Service) HandleRoutes(writer http.ResponseWriter, request *http.Request
 	switch route {
 
 	case "vsp":
-		s.Mutex.RLock()
+		s.RLock()
 		respJSON, err := json.Marshal(s.Vsps)
-		s.Mutex.RUnlock()
+		s.RUnlock()
 		if err != nil {
 			writeJSONErrorResponse(&writer, err)
 			return
@@ -352,9 +348,9 @@ func (s *Service) HandleRoutes(writer http.ResponseWriter, request *http.Request
 		return
 
 	case "webinfo":
-		s.Mutex.RLock()
+		s.RLock()
 		respJSON, err := json.Marshal(s.WebInfo)
-		s.Mutex.RUnlock()
+		s.RUnlock()
 		if err != nil {
 			writeJSONErrorResponse(&writer, err)
 			return
@@ -364,9 +360,9 @@ func (s *Service) HandleRoutes(writer http.ResponseWriter, request *http.Request
 		return
 
 	case "price":
-		s.Mutex.RLock()
+		s.RLock()
 		respJSON, err := json.Marshal(s.PriceInfo)
-		s.Mutex.RUnlock()
+		s.RUnlock()
 		if err != nil {
 			writeJSONErrorResponse(&writer, err)
 			return
