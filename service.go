@@ -254,14 +254,15 @@ func (s *Service) vspData() {
 
 // dcrdata gets an API response from dcrdata and unmarshals it.
 func (s *Service) dcrdata(path string, response interface{}) error {
-	body, err := s.getHTTP("https://dcrdata.decred.org/api" + path)
+	path = fmt.Sprintf("https://dcrdata.decred.org/api%s", path)
+	body, err := s.getHTTP(path)
 	if err != nil {
-		return err
+		return fmt.Errorf("GET %s failed: %w", path, err)
 	}
 
 	err = json.Unmarshal(body, response)
 	if err != nil {
-		return err
+		return fmt.Errorf("parsing %s response failed: %w", path, err)
 	}
 
 	return nil
