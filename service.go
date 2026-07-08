@@ -9,14 +9,13 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"net/http"
 	"sync"
 	"time"
 
-	"github.com/decred/dcrd/dcrutil/v4"
-	apitypes "github.com/decred/dcrdata/v6/api/types"
-	"github.com/decred/dcrdata/v6/db/dbtypes"
 	"github.com/decred/vspd/types/v3"
+	"golang.org/x/mod/semver"
 )
 
 // Vsp contains information about a single Voting Service Provider. Includes
@@ -211,6 +210,11 @@ func (s *Service) vspStats(url string, vsp Vsp) error {
 		return fmt.Errorf("%v: unmarshal failed: %w", infoURL, err)
 	}
 
+	// semver library expects the "v" prefix but vspd does not return it.
+	if !semver.IsValid("v" + info.VspdVersion) {
+		return fmt.Errorf("%v: version not valid (%q)", infoURL, info.VspdVersion)
+	}
+
 	vsp.APIVersions = info.APIVersions
 	vsp.FeePercentage = info.FeePercentage
 	vsp.Closed = info.VspClosed
@@ -250,14 +254,15 @@ func (s *Service) vspData() {
 
 // dcrdata gets an API response from dcrdata and unmarshals it.
 func (s *Service) dcrdata(path string, response interface{}) error {
-	body, err := s.getHTTP("https://dcrdata.decred.org/api" + path)
+	path = fmt.Sprintf("https://dcrdata.decred.org/api%s", path)
+	body, err := s.getHTTP(path)
 	if err != nil {
-		return err
+		return fmt.Errorf("GET %s failed: %w", path, err)
 	}
 
 	err = json.Unmarshal(body, response)
 	if err != nil {
-		return err
+		return fmt.Errorf("parsing %s response failed: %w", path, err)
 	}
 
 	return nil
@@ -285,25 +290,25 @@ func (s *Service) price() error {
 }
 
 func (s *Service) info() error {
-	var supply apitypes.CoinSupply
+	var supply CoinSupply
 	err := s.dcrdata("/supply", &supply)
 	if err != nil {
 		return err
 	}
 
-	var bestBlock apitypes.BlockDataBasic
+	var bestBlock BlockDataBasic
 	err = s.dcrdata("/block/best", &bestBlock)
 	if err != nil {
 		return err
 	}
 
-	var treasury dbtypes.TreasuryBalance
+	var treasury TreasuryBalance
 	err = s.dcrdata("/treasury/balance", &treasury)
 	if err != nil {
 		return err
 	}
 
-	var subsidy apitypes.BlockSubsidies
+	var subsidy BlockSubsidies
 	err = s.dcrdata("/block/best/subsidy", &subsidy)
 	if err != nil {
 		return err
@@ -311,7 +316,7 @@ func (s *Service) info() error {
 
 	// toDCR converts atoms to DCR.
 	toDCR := func(atoms int64) float64 {
-		return dcrutil.Amount(atoms).ToCoin()
+		return float64(atoms) / math.Pow10(8)
 	}
 
 	s.Lock()
