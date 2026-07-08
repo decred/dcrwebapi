@@ -14,8 +14,6 @@ import (
 	"sync"
 	"time"
 
-	apitypes "github.com/decred/dcrdata/v6/api/types"
-	"github.com/decred/dcrdata/v6/db/dbtypes"
 	"github.com/decred/vspd/types/v3"
 )
 
@@ -285,25 +283,25 @@ func (s *Service) price() error {
 }
 
 func (s *Service) info() error {
-	var supply apitypes.CoinSupply
+	var supply CoinSupply
 	err := s.dcrdata("/supply", &supply)
 	if err != nil {
 		return err
 	}
 
-	var bestBlock apitypes.BlockDataBasic
+	var bestBlock BlockDataBasic
 	err = s.dcrdata("/block/best", &bestBlock)
 	if err != nil {
 		return err
 	}
 
-	var treasury dbtypes.TreasuryBalance
+	var treasury TreasuryBalance
 	err = s.dcrdata("/treasury/balance", &treasury)
 	if err != nil {
 		return err
 	}
 
-	var subsidy apitypes.BlockSubsidies
+	var subsidy BlockSubsidies
 	err = s.dcrdata("/block/best/subsidy", &subsidy)
 	if err != nil {
 		return err
