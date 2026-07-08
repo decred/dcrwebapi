@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/decred/vspd/types/v3"
+	"golang.org/x/mod/semver"
 )
 
 // Vsp contains information about a single Voting Service Provider. Includes
@@ -207,6 +208,11 @@ func (s *Service) vspStats(url string, vsp Vsp) error {
 	err = json.Unmarshal(infoResp, &info)
 	if err != nil {
 		return fmt.Errorf("%v: unmarshal failed: %w", infoURL, err)
+	}
+
+	// semver library expects the "v" prefix but vspd does not return it.
+	if !semver.IsValid("v" + info.VspdVersion) {
+		return fmt.Errorf("%v: version not valid (%q)", infoURL, info.VspdVersion)
 	}
 
 	vsp.APIVersions = info.APIVersions
